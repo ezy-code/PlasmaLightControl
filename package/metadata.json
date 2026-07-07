@@ -1,0 +1,20 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "danzicchi@gmail.com",
+                "Name": "danzicchi"
+            }
+        ],
+        "Category": "Utilities",
+        "Description": "Steuert eine Home-Assistant-Lampe: An/Aus, Helligkeit, Farbe (Farbkreis), Farbtemperatur und gespeicherte Farben.",
+        "Icon": "im-jabber",
+        "Id": "com.github.danzicchi.plasmalightcontrol",
+        "License": "GPL-3.0-or-later",
+        "Name": "Plasma Light Control",
+        "Version": "1.0",
+        "Website": "https://github.com/danzicchi/PlasmaLightControl"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
+      http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
+
+    <kcfgfile name=""/>
+
+    <group name="General">
+        <entry name="haUrl" type="String">
+            <label>Basis-URL der Home-Assistant-Instanz</label>
+            <default>http://homeassistant.local:8123</default>
+        </entry>
+        <entry name="haToken" type="String">
+            <label>Long-Lived Access Token</label>
+            <default></default>
+        </entry>
+        <entry name="entityId" type="String">
+            <label>Entity-ID der Lampe (z. B. light.wohnzimmer)</label>
+            <default></default>
+        </entry>
+        <entry name="pollInterval" type="Int">
+            <label>Aktualisierungsintervall des Status in Sekunden</label>
+            <default>15</default>
+        </entry>
+        <entry name="savedColors" type="StringList">
+            <label>Gespeicherte Farben als Hex-Werte</label>
+            <default></default>
+        </entry>
+    </group>
+</kcfg>
