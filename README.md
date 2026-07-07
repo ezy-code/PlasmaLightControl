@@ -5,6 +5,19 @@ Ein KDE-Plasma-6-Panel-Widget (Plasmoid), das eine über
 An/Aus, Helligkeit, Farbe (über einen HSV-Farbkreis), Farbtemperatur sowie
 gespeicherte Lieblingsfarben.
 
+## Vorschau
+
+<p align="center">
+  <img src="screenshots/popup.png" alt="Bedienfenster mit Helligkeit, Farbkreis, gespeicherten Farben und Farbtemperatur" width="360">
+</p>
+
+Eigene, an die Theme-Farbe angepasste Panel-Icons zeigen den Zustand der Lampe
+(eingeschaltet mit Farbpunkt für die aktuelle Lichtfarbe, ausgeschaltet):
+
+<p align="center">
+  <img src="screenshots/panel-icons.png" alt="Panel-Icons: eingeschaltet und ausgeschaltet" width="360">
+</p>
+
 ## Funktionen
 
 - **Panel-Icon**
