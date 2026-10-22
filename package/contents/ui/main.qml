@@ -157,7 +157,7 @@ PlasmoidItem {
         brightness = value;
         if (!configured)
             return;
-        HA.turnOn(cfg, { brightness: Math.round(value) }, function () {
+        HA.turnOn(cfg, { brightness: Math.round(value), transition: 0.4 }, function () {
             lightOn = true;
         }, function (err) { statusText = errorMessages.text(err); });
     }
@@ -167,7 +167,7 @@ PlasmoidItem {
         saturation = s;
         if (!configured)
             return;
-        HA.turnOn(cfg, { hs_color: [Math.round(h * 360), Math.round(s * 100)] }, function () {
+        HA.turnOn(cfg, { hs_color: [Math.round(h * 360), Math.round(s * 100)], transition: 0.4 }, function () {
             lightOn = true;
         }, function (err) { statusText = errorMessages.text(err); });
     }
@@ -176,7 +176,7 @@ PlasmoidItem {
         colorTempKelvin = kelvin;
         if (!configured)
             return;
-        HA.turnOn(cfg, { color_temp_kelvin: Math.round(kelvin) }, function () {
+        HA.turnOn(cfg, { color_temp_kelvin: Math.round(kelvin), transition: 0.4 }, function () {
             lightOn = true;
         }, function (err) { statusText = errorMessages.text(err); });
     }
