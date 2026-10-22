@@ -49,13 +49,15 @@ PlasmoidItem {
     Plasmoid.icon: Qt.resolvedUrl("../icons/light-on.svg")
     toolTipMainText: displayName || Plasmoid.configuration.entityId || i18n("Plasma Light Control")
     toolTipSubText: {
+        const hint = i18n("Left-click: popup · Middle-click: toggle · Wheel: brightness");
         if (!configured)
             return i18n("Not configured – please set up the connection.");
         if (!connected)
-            return statusText || i18n("Connecting …");
-        return lightOn
+            return (statusText || i18n("Connecting …")) + "\n" + hint;
+        const stateText = lightOn
             ? i18n("On · Brightness %1 %", Math.round(brightness / 255 * 100))
             : i18nc("@state", "Off");
+        return stateText + "\n" + hint;
     }
 
     // --- Statusabfrage ---
