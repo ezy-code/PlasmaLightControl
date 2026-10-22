@@ -18,6 +18,18 @@ Kirigami.FormLayout {
     property var cfg_savedColors
     property var cfg_savedColorsDefault: []
 
+    property bool loadingLamps: false
+    readonly property string requestScope: "config"
+
+    function requestCfg() {
+        return {
+            url: urlField.text.trim(),
+            token: tokenField.text.trim(),
+            scope: requestScope,
+            timeout: 8000
+        };
+    }
+
     ErrorMessages { id: errorMessages }
 
     QQC2.TextField {
@@ -57,6 +69,66 @@ Kirigami.FormLayout {
         placeholderText: "light.living_room"
         Layout.fillWidth: true
     }
+
+    RowLayout {
+        QQC2.Button {
+            id: loadLampsButton
+            text: i18n("Load lamps")
+            icon.name: "view-refresh"
+            enabled: !page.loadingLamps && urlField.text.trim().length > 0 && tokenField.text.trim().length > 0
+            onClicked: {
+                page.loadingLamps = true;
+                testLabel.text = i18n("Loading lamps …");
+                testLabel.color = Kirigami.Theme.textColor;
+                HA.fetchLights(page.requestCfg(), function (lamps) {
+                    page.loadingLamps = false;
+                    lampModel.clear();
+                    for (let i = 0; i < lamps.length; ++i)
+                        lampModel.append({ label: lamps[i].name + " (" + lamps[i].entityId + ")", entityId: lamps[i].entityId });
+                    if (lamps.length === 0) {
+                        testLabel.text = i18n("No lamps found.");
+                        testLabel.color = Kirigami.Theme.neutralTextColor;
+                        return;
+                    }
+                    testLabel.text = i18n("Found %1 lamps.", lamps.length);
+                    testLabel.color = Kirigami.Theme.positiveTextColor;
+                    for (let j = 0; j < lamps.length; ++j) {
+                        if (lamps[j].entityId === entityField.text.trim()) {
+                            lampCombo.currentIndex = j;
+                            break;
+                        }
+                    }
+                }, function (err) {
+                    page.loadingLamps = false;
+                    testLabel.text = i18n("Error: %1", errorMessages.text(err));
+                    testLabel.color = Kirigami.Theme.negativeTextColor;
+                });
+            }
+        }
+
+        QQC2.BusyIndicator {
+            running: page.loadingLamps
+            visible: running
+            implicitWidth: Kirigami.Units.iconSizes.small
+            implicitHeight: Kirigami.Units.iconSizes.small
+        }
+    }
+
+    QQC2.ComboBox {
+        id: lampCombo
+        Kirigami.FormData.label: i18n("Available lamps:")
+        Layout.fillWidth: true
+        visible: lampModel.count > 0
+        model: lampModel
+        textRole: "label"
+        onActivated: index => {
+            const id = lampModel.get(index).entityId;
+            if (entityField.text !== id)
+                entityField.text = id;
+        }
+    }
+
+    ListModel { id: lampModel }
 
     QQC2.SpinBox {
         id: pollField

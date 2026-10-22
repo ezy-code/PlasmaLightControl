@@ -177,6 +177,24 @@ function fetchState(cfg, onSuccess, onError) {
     request(cfg, "GET", "/api/states/" + encodeURIComponent(cfg.entityId), null, onSuccess, onError);
 }
 
+function fetchLights(cfg, onSuccess, onError) {
+    request(cfg, "GET", "/api/states", null, function (states) {
+        const lamps = [];
+        if (Array.isArray(states)) {
+            for (let i = 0; i < states.length; ++i) {
+                const s = states[i];
+                if (!s || typeof s.entity_id !== "string" || s.entity_id.indexOf("light.") !== 0)
+                    continue;
+                const name = s.attributes && s.attributes.friendly_name;
+                lamps.push({ entityId: s.entity_id, name: name || s.entity_id });
+            }
+        }
+        lamps.sort(function (a, b) { return a.name.localeCompare(b.name); });
+        if (onSuccess)
+            onSuccess(lamps);
+    }, onError);
+}
+
 function turnOn(cfg, attrs, onSuccess, onError) {
     const body = { entity_id: cfg.entityId };
     if (attrs) {
