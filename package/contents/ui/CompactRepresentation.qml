@@ -21,18 +21,18 @@ MouseArea {
         }
     }
 
-    // Mausrad über dem Icon regelt die Helligkeit.
+    // Mausrad über dem Icon regelt die Helligkeit in 5-%-Schritten.
     onWheel: wheel => {
-        if (!mainItem.configured)
+        if (!mainItem.configured || !mainItem.connected || !mainItem.available)
             return;
-        const delta = wheel.angleDelta.y > 0 ? 13 : -13; // ~5 % Schritte
-        const next = Math.max(0, Math.min(255, mainItem.brightness + delta));
-        if (next <= 0) {
-            mainItem.brightness = 0;
-            mainItem.setBrightness(0);
-        } else {
+        // Übernehmen, sonst scrollt die Panelleiste mit.
+        wheel.accepted = true;
+
+        const step = wheel.angleDelta.y > 0 ? 5 : -5;
+        const percent = Math.max(0, Math.min(100, Math.round(mainItem.brightness / 255 * 100) + step));
+        const next = Math.round(percent * 255 / 100);
+        if (next !== mainItem.brightness)
             mainItem.setBrightness(next);
-        }
     }
 
     Kirigami.Icon {

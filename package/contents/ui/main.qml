@@ -25,6 +25,7 @@ PlasmoidItem {
     property string displayName: ""
     property string statusText: ""
     property bool connected: false
+    property bool available: true
 
     // --- Status polling ---
     // One request at a time; extra triggers coalesce into a single follow-up.
@@ -116,6 +117,7 @@ PlasmoidItem {
     function applyState(state) {
         if (!state || !state.state)
             return;
+        available = state.state !== "unavailable" && state.state !== "unknown";
         lightOn = (state.state === "on");
         const a = state.attributes || {};
         displayName = a.friendly_name || Plasmoid.configuration.entityId;
