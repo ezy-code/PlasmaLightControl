@@ -67,11 +67,8 @@ PlasmaExtras.Representation {
                 text: mainItem.displayName || Plasmoid.configuration.entityId
             }
 
-            PlasmaComponents3.Button {
-                id: toggleButton
-                icon.name: mainItem.lightOn ? "redshift-status-off" : "redshift-status-on"
-                text: mainItem.lightOn ? i18nc("@action:button", "Turn off") : i18nc("@action:button", "Turn on")
-                checkable: false
+            QQC2.Switch {
+                id: toggleSwitch
                 onClicked: mainItem.toggleLight()
             }
         }
@@ -289,6 +286,13 @@ PlasmaExtras.Representation {
                 onMoved: mainItem.colorTempKelvin = value
             }
         }
+    }
+
+    // Hält den Switch synchron, auch wenn der Status vom Polling kommt.
+    Binding {
+        target: toggleSwitch
+        property: "checked"
+        value: mainItem.lightOn
     }
 
     // Verwaltung der gespeicherten Farben (Persistenz in der Plasmoid-Konfiguration).
