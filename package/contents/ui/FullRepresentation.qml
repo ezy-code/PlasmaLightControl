@@ -74,13 +74,25 @@ PlasmaExtras.Representation {
         }
 
         // Verbindungsfehler-Hinweis
-        PlasmaComponents3.Label {
+        RowLayout {
             Layout.fillWidth: true
             visible: !mainItem.connected && mainItem.statusText.length > 0
-            text: mainItem.statusText
-            color: Kirigami.Theme.negativeTextColor
-            wrapMode: Text.WordWrap
-            font: Kirigami.Theme.smallFont
+            spacing: Kirigami.Units.smallSpacing
+
+            PlasmaComponents3.Label {
+                Layout.fillWidth: true
+                text: mainItem.statusText
+                color: Kirigami.Theme.negativeTextColor
+                wrapMode: Text.WordWrap
+                font: Kirigami.Theme.smallFont
+            }
+
+            PlasmaComponents3.ToolButton {
+                icon.name: "view-refresh"
+                text: i18nc("@action:button", "Retry")
+                display: QQC2.AbstractButton.IconOnly
+                onClicked: mainItem.refresh()
+            }
         }
 
         // --- Helligkeit ---
