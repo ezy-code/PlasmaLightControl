@@ -8,7 +8,7 @@
 
     <group name="General">
         <entry name="haUrl" type="String">
-            <label>Basis-URL der Home-Assistant-Instanz</label>
+            <label>Base URL of the Home Assistant instance</label>
             <default>http://homeassistant.local:8123</default>
         </entry>
         <entry name="haToken" type="String">
@@ -16,15 +16,15 @@
             <default></default>
         </entry>
         <entry name="entityId" type="String">
-            <label>Entity-ID der Lampe (z. B. light.wohnzimmer)</label>
+            <label>Lamp entity ID (e.g. light.living_room)</label>
             <default></default>
         </entry>
         <entry name="pollInterval" type="Int">
-            <label>Aktualisierungsintervall des Status in Sekunden</label>
+            <label>Status refresh interval in seconds</label>
             <default>15</default>
         </entry>
         <entry name="savedColors" type="StringList">
-            <label>Gespeicherte Farben als Hex-Werte</label>
+            <label>Saved colors as hex values</label>
             <default></default>
         </entry>
     </group>

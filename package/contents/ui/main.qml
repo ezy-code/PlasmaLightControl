@@ -6,6 +6,8 @@ import "HomeAssistant.js" as HA
 PlasmoidItem {
     id: mainItem
 
+    ErrorMessages { id: errorMessages }
+
     // --- Zustand der Lampe ---
     property bool lightOn: false
     property int brightness: 0          // 0..255 (Home-Assistant-Skala)
@@ -47,12 +49,12 @@ PlasmoidItem {
     toolTipMainText: Plasmoid.configuration.entityId || i18n("Plasma Light Control")
     toolTipSubText: {
         if (!configured)
-            return i18n("Nicht konfiguriert – bitte Verbindung einrichten.");
+            return i18n("Not configured – please set up the connection.");
         if (!connected)
-            return statusText || i18n("Verbinde …");
+            return statusText || i18n("Connecting …");
         return lightOn
-            ? i18n("Ein · Helligkeit %1 %", Math.round(brightness / 255 * 100))
-            : i18n("Aus");
+            ? i18n("On · Brightness %1 %", Math.round(brightness / 255 * 100))
+            : i18nc("@state", "Off");
     }
 
     // --- Statusabfrage ---
@@ -61,7 +63,7 @@ PlasmoidItem {
             stateRequestInFlight = false;
             stateRefreshPending = false;
             connected = false;
-            statusText = i18n("Nicht konfiguriert");
+            statusText = i18n("Not configured");
             return;
         }
 
@@ -85,7 +87,7 @@ PlasmoidItem {
                 return;
             finishStateRequest();
             connected = false;
-            statusText = err;
+            statusText = errorMessages.text(err);
         });
     }
 
@@ -145,7 +147,7 @@ PlasmoidItem {
             refreshTimer.restart();
             lightOn = !lightOn; // optimistisches Update
         }, function (err) {
-            statusText = err;
+            statusText = errorMessages.text(err);
         });
     }
 
@@ -155,7 +157,7 @@ PlasmoidItem {
             return;
         HA.turnOn(cfg, { brightness: Math.round(value) }, function () {
             lightOn = true;
-        }, function (err) { statusText = err; });
+        }, function (err) { statusText = errorMessages.text(err); });
     }
 
     function setColor(h, s) {
@@ -165,7 +167,7 @@ PlasmoidItem {
             return;
         HA.turnOn(cfg, { hs_color: [Math.round(h * 360), Math.round(s * 100)] }, function () {
             lightOn = true;
-        }, function (err) { statusText = err; });
+        }, function (err) { statusText = errorMessages.text(err); });
     }
 
     function setColorTemp(kelvin) {
@@ -174,7 +176,7 @@ PlasmoidItem {
             return;
         HA.turnOn(cfg, { color_temp_kelvin: Math.round(kelvin) }, function () {
             lightOn = true;
-        }, function (err) { statusText = err; });
+        }, function (err) { statusText = errorMessages.text(err); });
     }
 
     // --- Timer ---

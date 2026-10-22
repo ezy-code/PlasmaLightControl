@@ -29,6 +29,17 @@ function requestTimeout(cfg, method) {
     return method === "GET" ? limit : Math.max(limit, 10000);
 }
 
+function makeError(code, details) {
+    const err = { code: code };
+    if (details) {
+        for (const key in details) {
+            if (Object.prototype.hasOwnProperty.call(details, key))
+                err[key] = details[key];
+        }
+    }
+    return err;
+}
+
 // Aborts without firing callbacks.
 function discard(entry) {
     entry.cancelled = true;
@@ -59,7 +70,7 @@ function request(cfg, method, path, body, onSuccess, onError) {
     const base = normalizedBase(cfg.url);
     if (!base || !cfg.token) {
         if (onError)
-            onError("Keine URL oder kein Token konfiguriert.");
+            onError(makeError("notConfigured"));
         return;
     }
 
@@ -106,13 +117,13 @@ function request(cfg, method, path, body, onSuccess, onError) {
             onSuccess(data);
     }
 
-    function finishError(message) {
+    function finishError(err) {
         if (!isCurrent())
             return;
         entry.settled = true;
         release();
         if (onError)
-            onError(message);
+            onError(err);
     }
 
     xhr.onreadystatechange = function () {
@@ -131,21 +142,24 @@ function request(cfg, method, path, body, onSuccess, onError) {
             finishOk(data);
         } else if (xhr.status === 0) {
             // No HTTP exchange: unreachable server, DNS or CORS.
-            finishError("Keine Verbindung zu Home Assistant.");
+            finishError(makeError("noConnection"));
         } else {
-            finishError("HTTP " + xhr.status + ": " + (xhr.statusText || xhr.responseText));
+            finishError(makeError("httpError", {
+                status: xhr.status,
+                detail: xhr.statusText || (xhr.responseText || "").slice(0, 200)
+            }));
         }
     };
     xhr.onerror = function () {
-        finishError("Netzwerkfehler beim Verbinden mit Home Assistant.");
+        finishError(makeError("networkError"));
     };
     xhr.ontimeout = function () {
-        finishError("Zeitüberschreitung bei der Verbindung.");
+        finishError(makeError("timeout"));
     };
     xhr.onabort = function () {
         // Own aborts are silent.
         if (!entry.cancelled)
-            finishError("Anfrage abgebrochen.");
+            finishError(makeError("aborted"));
     };
 
     if (body)
@@ -157,7 +171,7 @@ function request(cfg, method, path, body, onSuccess, onError) {
 function fetchState(cfg, onSuccess, onError) {
     if (!cfg.entityId) {
         if (onError)
-            onError("Keine Entity-ID konfiguriert.");
+            onError(makeError("noEntityId"));
         return;
     }
     request(cfg, "GET", "/api/states/" + encodeURIComponent(cfg.entityId), null, onSuccess, onError);

@@ -1,0 +1,193 @@
+# German translation of Plasma Light Control.
+# Copyright (C) 2026 danzicchi
+# This file is distributed under the same license as the Plasma Light Control package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Plasma Light Control 1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/danzicchi/PlasmaLightControl/"
+"issues\n"
+"POT-Creation-Date: 2026-10-22 13:38+0300\n"
+"PO-Revision-Date: 2026-10-22 00:00+0000\n"
+"Last-Translator: danzicchi\n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../package/contents/ui/ConfigGeneral.qml:25
+msgid "Home Assistant URL:"
+msgstr "Home-Assistant-URL:"
+
+#: ../package/contents/ui/ConfigGeneral.qml:32
+msgid "Access token:"
+msgstr "Access Token:"
+
+#: ../package/contents/ui/ConfigGeneral.qml:33
+msgid "Long-Lived Access Token"
+msgstr "Long-Lived Access Token"
+
+#: ../package/contents/ui/ConfigGeneral.qml:40
+msgid "Show token"
+msgstr "Token anzeigen"
+
+#: ../package/contents/ui/ConfigGeneral.qml:49
+msgid ""
+"You can create a token in Home Assistant under “Profile → Security → Long-"
+"Lived Access Tokens”."
+msgstr ""
+"Den Token erzeugst du in Home Assistant unter „Profil → Sicherheit → Long-"
+"Lived Access Tokens“."
+
+#: ../package/contents/ui/ConfigGeneral.qml:56
+msgid "Lamp entity ID:"
+msgstr "Entity-ID der Lampe:"
+
+#: ../package/contents/ui/ConfigGeneral.qml:63
+msgid "Status polling interval (s):"
+msgstr "Statusabfrage-Intervall (s):"
+
+#: ../package/contents/ui/ConfigGeneral.qml:73
+msgid "Test connection"
+msgstr "Verbindung testen"
+
+#: ../package/contents/ui/ConfigGeneral.qml:76
+msgid "Testing …"
+msgstr "Teste …"
+
+#: ../package/contents/ui/ConfigGeneral.qml:82
+msgctxt "@state"
+msgid "on"
+msgstr "eingeschaltet"
+
+#: ../package/contents/ui/ConfigGeneral.qml:82
+msgctxt "@state"
+msgid "off"
+msgstr "ausgeschaltet"
+
+#: ../package/contents/ui/ConfigGeneral.qml:81
+msgid "Connected – lamp is %1."
+msgstr "Verbunden – Lampe ist %1."
+
+#: ../package/contents/ui/ConfigGeneral.qml:85
+msgid "Response without a valid state."
+msgstr "Antwort ohne gültigen Zustand."
+
+#: ../package/contents/ui/ConfigGeneral.qml:90
+msgid "Error: %1"
+msgstr "Fehler: %1"
+
+#: ../package/contents/ui/ErrorMessages.qml:12
+msgid "No URL or token configured."
+msgstr "Keine URL oder kein Token konfiguriert."
+
+#: ../package/contents/ui/ErrorMessages.qml:14
+msgid "No lamp entity ID configured."
+msgstr "Keine Entity-ID der Lampe konfiguriert."
+
+#: ../package/contents/ui/ErrorMessages.qml:16
+msgid "Cannot reach Home Assistant."
+msgstr "Keine Verbindung zu Home Assistant."
+
+#: ../package/contents/ui/ErrorMessages.qml:18
+msgid "Network error while connecting to Home Assistant."
+msgstr "Netzwerkfehler beim Verbinden mit Home Assistant."
+
+#: ../package/contents/ui/ErrorMessages.qml:20
+msgid "Connection timed out."
+msgstr "Zeitüberschreitung bei der Verbindung."
+
+#: ../package/contents/ui/ErrorMessages.qml:22
+msgid "Request cancelled."
+msgstr "Anfrage abgebrochen."
+
+#: ../package/contents/ui/ErrorMessages.qml:25
+msgid "HTTP %1: %2"
+msgstr "HTTP %1: %2"
+
+#: ../package/contents/ui/ErrorMessages.qml:26
+msgid "HTTP error %1"
+msgstr "HTTP-Fehler %1"
+
+#: ../package/contents/ui/ErrorMessages.qml:28
+msgid "Unknown error."
+msgstr "Unbekannter Fehler."
+
+#: ../package/contents/ui/FullRepresentation.qml:37
+#: ../package/contents/ui/main.qml:66
+msgid "Not configured"
+msgstr "Nicht konfiguriert"
+
+#: ../package/contents/ui/FullRepresentation.qml:38
+msgid "Please enter the lamp's URL, token, and entity ID in the settings."
+msgstr ""
+"Bitte in den Einstellungen URL, Token und Entity-ID der Lampe eintragen."
+
+#: ../package/contents/ui/FullRepresentation.qml:42
+msgid "Open settings"
+msgstr "Einstellungen öffnen"
+
+#: ../package/contents/ui/FullRepresentation.qml:73
+msgctxt "@action:button"
+msgid "Turn off"
+msgstr "Aus"
+
+#: ../package/contents/ui/FullRepresentation.qml:73
+msgctxt "@action:button"
+msgid "Turn on"
+msgstr "Ein"
+
+#: ../package/contents/ui/FullRepresentation.qml:99
+msgid "Brightness"
+msgstr "Helligkeit"
+
+#: ../package/contents/ui/FullRepresentation.qml:143
+msgid "Color"
+msgstr "Farbe"
+
+#: ../package/contents/ui/FullRepresentation.qml:186
+msgid "Saved colors"
+msgstr "Gespeicherte Farben"
+
+#: ../package/contents/ui/FullRepresentation.qml:191
+msgid "Save current color"
+msgstr "Aktuelle Farbe speichern"
+
+#: ../package/contents/ui/FullRepresentation.qml:231
+msgid "Click: apply · Right-click: delete"
+msgstr "Klick: anwenden · Rechtsklick: löschen"
+
+#: ../package/contents/ui/FullRepresentation.qml:239
+msgid "No colors saved yet."
+msgstr "Noch keine Farben gespeichert."
+
+#: ../package/contents/ui/FullRepresentation.qml:257
+msgid "Color temperature"
+msgstr "Farbtemperatur"
+
+#: ../package/contents/ui/main.qml:49
+msgid "Plasma Light Control"
+msgstr "Plasma Light Control"
+
+#: ../package/contents/ui/main.qml:52
+msgid "Not configured – please set up the connection."
+msgstr "Nicht konfiguriert – bitte Verbindung einrichten."
+
+#: ../package/contents/ui/main.qml:54
+msgid "Connecting …"
+msgstr "Verbinde …"
+
+#: ../package/contents/ui/main.qml:56
+msgid "On · Brightness %1 %"
+msgstr "Ein · Helligkeit %1 %"
+
+#: ../package/contents/ui/main.qml:57
+msgctxt "@state"
+msgid "Off"
+msgstr "Aus"
+
+#: ../package/contents/config/config.qml:6
+msgid "Connection"
+msgstr "Verbindung"

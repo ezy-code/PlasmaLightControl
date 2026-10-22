@@ -8,7 +8,9 @@
             }
         ],
         "Category": "Utilities",
-        "Description": "Steuert eine Home-Assistant-Lampe: An/Aus, Helligkeit, Farbe (Farbkreis), Farbtemperatur und gespeicherte Farben.",
+        "Description": "Controls a Home Assistant lamp: on/off, brightness, color (color wheel), color temperature, and saved colors.",
+        "Description[de]": "Steuert eine Home-Assistant-Lampe: An/Aus, Helligkeit, Farbe (Farbkreis), Farbtemperatur und gespeicherte Farben.",
+        "Description[ru]": "Управляет лампой Home Assistant: включение/выключение, яркость, цвет (цветовой круг), цветовая температура и сохранённые цвета.",
         "Icon": "im-jabber",
         "Id": "com.github.danzicchi.plasmalightcontrol",
         "License": "GPL-3.0-or-later",

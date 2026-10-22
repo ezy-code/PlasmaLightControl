@@ -34,12 +34,12 @@ PlasmaExtras.Representation {
         width: parent.width - Kirigami.Units.gridUnit * 4
         visible: !mainItem.configured
         iconName: "network-disconnect"
-        text: i18n("Nicht konfiguriert")
-        explanation: i18n("Bitte in den Einstellungen URL, Token und Entity-ID der Lampe eintragen.")
+        text: i18n("Not configured")
+        explanation: i18n("Please enter the lamp's URL, token, and entity ID in the settings.")
 
         helpfulAction: QQC2.Action {
             icon.name: "configure"
-            text: i18n("Einstellungen öffnen")
+            text: i18n("Open settings")
             onTriggered: Plasmoid.internalAction("configure").trigger()
         }
     }
@@ -70,7 +70,7 @@ PlasmaExtras.Representation {
             PlasmaComponents3.Button {
                 id: toggleButton
                 icon.name: mainItem.lightOn ? "redshift-status-off" : "redshift-status-on"
-                text: mainItem.lightOn ? i18n("Aus") : i18n("Ein")
+                text: mainItem.lightOn ? i18nc("@action:button", "Turn off") : i18nc("@action:button", "Turn on")
                 checkable: false
                 onClicked: mainItem.toggleLight()
             }
@@ -96,7 +96,7 @@ PlasmaExtras.Representation {
                 Layout.fillWidth: true
                 PlasmaComponents3.Label {
                     Layout.fillWidth: true
-                    text: i18n("Helligkeit")
+                    text: i18n("Brightness")
                 }
                 PlasmaComponents3.Label {
                     text: Math.round(brightnessSlider.value / 255 * 100) + " %"
@@ -140,7 +140,7 @@ PlasmaExtras.Representation {
             visible: mainItem.supportsColor
             enabled: mainItem.lightOn
 
-            PlasmaComponents3.Label { text: i18n("Farbe") }
+            PlasmaComponents3.Label { text: i18n("Color") }
 
             // Wrapper füllt die Breite; der Farbkreis wird darin exakt zentriert.
             Item {
@@ -183,12 +183,12 @@ PlasmaExtras.Representation {
                 Layout.fillWidth: true
                 PlasmaComponents3.Label {
                     Layout.fillWidth: true
-                    text: i18n("Gespeicherte Farben")
+                    text: i18n("Saved colors")
                 }
                 PlasmaComponents3.ToolButton {
                     icon.name: "list-add"
                     display: QQC2.AbstractButton.IconOnly
-                    text: i18n("Aktuelle Farbe speichern")
+                    text: i18n("Save current color")
                     enabled: mainItem.lightOn
                     onClicked: savedColorsModel.addCurrent()
                 }
@@ -228,7 +228,7 @@ PlasmaExtras.Representation {
                             }
                         }
 
-                        QQC2.ToolTip.text: i18n("Klick: anwenden · Rechtsklick: löschen")
+                        QQC2.ToolTip.text: i18n("Click: apply · Right-click: delete")
                         QQC2.ToolTip.visible: swatchMouse.containsMouse
                         QQC2.ToolTip.delay: Kirigami.Units.toolTipDelay
                     }
@@ -236,7 +236,7 @@ PlasmaExtras.Representation {
 
                 PlasmaComponents3.Label {
                     visible: Plasmoid.configuration.savedColors.length === 0
-                    text: i18n("Noch keine Farben gespeichert.")
+                    text: i18n("No colors saved yet.")
                     opacity: 0.6
                     font: Kirigami.Theme.smallFont
                 }
@@ -254,7 +254,7 @@ PlasmaExtras.Representation {
                 Layout.fillWidth: true
                 PlasmaComponents3.Label {
                     Layout.fillWidth: true
-                    text: i18n("Farbtemperatur")
+                    text: i18n("Color temperature")
                 }
                 PlasmaComponents3.Label {
                     text: Math.round(tempSlider.value) + " K"
