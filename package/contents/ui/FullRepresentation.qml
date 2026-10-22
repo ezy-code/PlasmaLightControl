@@ -252,6 +252,35 @@ PlasmaExtras.Representation {
             }
         }
 
+        // --- Effekte ---
+        ColumnLayout {
+            Layout.fillWidth: true
+            spacing: Kirigami.Units.smallSpacing
+            visible: mainItem.supportsEffect
+            enabled: mainItem.lightOn
+
+            RowLayout {
+                Layout.fillWidth: true
+                PlasmaComponents3.Label {
+                    Layout.fillWidth: true
+                    text: i18n("Effect")
+                }
+                PlasmaComponents3.ToolButton {
+                    icon.name: "media-record"
+                    display: QQC2.AbstractButton.IconOnly
+                    text: i18n("Flash the light")
+                    onClicked: mainItem.flashLight()
+                }
+            }
+
+            QQC2.ComboBox {
+                id: effectCombo
+                Layout.fillWidth: true
+                model: mainItem.effectList
+                onActivated: index => mainItem.setEffect(mainItem.effectList[index])
+            }
+        }
+
         // --- Farbtemperatur ---
         ColumnLayout {
             Layout.fillWidth: true
@@ -305,6 +334,14 @@ PlasmaExtras.Representation {
         target: toggleSwitch
         property: "checked"
         value: mainItem.lightOn
+    }
+
+    // Binding statt direkter Bindung, damit die Auswahl des Nutzers erhalten bleibt.
+    Binding {
+        target: effectCombo
+        property: "currentIndex"
+        value: Math.max(0, mainItem.effectList.indexOf(mainItem.currentEffect))
+        when: mainItem.effectList.length > 0
     }
 
     // Verwaltung der gespeicherten Farben (Persistenz in der Plasmoid-Konfiguration).

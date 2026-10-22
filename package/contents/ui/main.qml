@@ -18,6 +18,9 @@ PlasmoidItem {
     property int maxKelvin: 6500
     property bool supportsColor: false
     property bool supportsColorTemp: false
+    property bool supportsEffect: false
+    property var effectList: []
+    property string currentEffect: ""
 
     property string displayName: ""
     property string statusText: ""
@@ -125,6 +128,11 @@ PlasmoidItem {
             || modes.indexOf("rgbw") >= 0 || modes.indexOf("rgbww") >= 0 || modes.indexOf("xy") >= 0;
         supportsColorTemp = modes.indexOf("color_temp") >= 0;
 
+        effectList = Array.isArray(a.effect_list) ? a.effect_list : [];
+        supportsEffect = effectList.length > 0;
+        if (typeof a.effect === "string")
+            currentEffect = a.effect;
+
         if (a.min_color_temp_kelvin)
             minKelvin = a.min_color_temp_kelvin;
         if (a.max_color_temp_kelvin)
@@ -181,6 +189,23 @@ PlasmoidItem {
         HA.turnOn(cfg, { color_temp_kelvin: Math.round(kelvin), transition: 0.4 }, function () {
             lightOn = true;
         }, function (err) { statusText = errorMessages.text(err); });
+    }
+
+    function setEffect(effect) {
+        currentEffect = effect;
+        if (!configured)
+            return;
+        HA.turnOn(cfg, { effect: effect, transition: 0.4 }, function () {
+            lightOn = true;
+        }, function (err) { statusText = errorMessages.text(err); });
+    }
+
+    function flashLight() {
+        if (!configured)
+            return;
+        HA.turnOn(cfg, { flash: "short" }, null, function (err) {
+            statusText = errorMessages.text(err);
+        });
     }
 
     // --- Timer ---
