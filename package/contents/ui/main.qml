@@ -19,6 +19,7 @@ PlasmoidItem {
     property bool supportsColor: false
     property bool supportsColorTemp: false
 
+    property string displayName: ""
     property string statusText: ""
     property bool connected: false
 
@@ -46,7 +47,7 @@ PlasmoidItem {
     readonly property bool configured: cfg.url && cfg.token && cfg.entityId
 
     Plasmoid.icon: Qt.resolvedUrl("../icons/light-on.svg")
-    toolTipMainText: Plasmoid.configuration.entityId || i18n("Plasma Light Control")
+    toolTipMainText: displayName || Plasmoid.configuration.entityId || i18n("Plasma Light Control")
     toolTipSubText: {
         if (!configured)
             return i18n("Not configured – please set up the connection.");
@@ -112,6 +113,7 @@ PlasmoidItem {
             return;
         lightOn = (state.state === "on");
         const a = state.attributes || {};
+        displayName = a.friendly_name || Plasmoid.configuration.entityId;
 
         if (a.brightness !== undefined && a.brightness !== null)
             brightness = a.brightness;

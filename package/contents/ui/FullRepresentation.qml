@@ -64,7 +64,7 @@ PlasmaExtras.Representation {
                 Layout.fillWidth: true
                 level: 3
                 elide: Text.ElideRight
-                text: Plasmoid.configuration.entityId
+                text: mainItem.displayName || Plasmoid.configuration.entityId
             }
 
             PlasmaComponents3.Button {
