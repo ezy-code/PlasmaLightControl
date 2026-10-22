@@ -222,7 +222,7 @@ PlasmaExtras.Representation {
                                 if (mouse.button === Qt.RightButton) {
                                     savedColorsModel.removeAt(swatch.index);
                                 } else {
-                                    var c = Qt.color(swatch.modelData);
+                                    const c = Qt.color(swatch.modelData);
                                     mainItem.setColor(c.hsvHue >= 0 ? c.hsvHue : 0, c.hsvSaturation);
                                 }
                             }
@@ -296,9 +296,9 @@ PlasmaExtras.Representation {
         id: savedColorsModel
 
         function addCurrent() {
-            var c = Qt.hsva(mainItem.hue, mainItem.saturation, 1.0, 1.0);
-            var hex = colorToHex(c);
-            var list = Plasmoid.configuration.savedColors.slice();
+            const c = Qt.hsva(mainItem.hue, mainItem.saturation, 1.0, 1.0);
+            const hex = colorToHex(c);
+            const list = Plasmoid.configuration.savedColors.slice();
             if (list.indexOf(hex) === -1) {
                 list.push(hex);
                 Plasmoid.configuration.savedColors = list;
@@ -306,7 +306,7 @@ PlasmaExtras.Representation {
         }
 
         function removeAt(index) {
-            var list = Plasmoid.configuration.savedColors.slice();
+            const list = Plasmoid.configuration.savedColors.slice();
             if (index >= 0 && index < list.length) {
                 list.splice(index, 1);
                 Plasmoid.configuration.savedColors = list;
@@ -315,7 +315,7 @@ PlasmaExtras.Representation {
 
         function colorToHex(c) {
             function toHex(v) {
-                var s = Math.round(v * 255).toString(16);
+                const s = Math.round(v * 255).toString(16);
                 return s.length === 1 ? "0" + s : s;
             }
             return "#" + toHex(c.r) + toHex(c.g) + toHex(c.b);

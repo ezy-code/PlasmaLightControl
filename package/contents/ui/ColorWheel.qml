@@ -24,18 +24,18 @@ Item {
         renderStrategy: Canvas.Cooperative
 
         onPaint: {
-            var ctx = getContext("2d");
-            var cx = root.center.x;
-            var cy = root.center.y;
-            var r = root.radius;
+            const ctx = getContext("2d");
+            const cx = root.center.x;
+            const cy = root.center.y;
+            const r = root.radius;
 
             ctx.clearRect(0, 0, width, height);
 
             // Farbton als Kranz aus feinen Segmenten zeichnen.
-            var step = 1; // Grad
-            for (var a = 0; a < 360; a += step) {
-                var start = (a - 0.5) * Math.PI / 180;
-                var end = (a + step + 0.5) * Math.PI / 180;
+            const step = 1; // Grad
+            for (let a = 0; a < 360; a += step) {
+                const start = (a - 0.5) * Math.PI / 180;
+                const end = (a + step + 0.5) * Math.PI / 180;
                 ctx.beginPath();
                 ctx.moveTo(cx, cy);
                 ctx.arc(cx, cy, r, start, end, false);
@@ -45,7 +45,7 @@ Item {
             }
 
             // Radialer Weiß-Verlauf für die Sättigung (Mitte weiß -> Rand transparent).
-            var grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+            const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
             grad.addColorStop(0, "rgba(255,255,255,1)");
             grad.addColorStop(1, "rgba(255,255,255,0)");
             ctx.beginPath();
@@ -87,15 +87,15 @@ Item {
         // Nur das Signal auslösen; hue/saturation werden von außen (mainItem)
         // gesetzt, damit die Komponente eine kontrollierte Ansicht bleibt.
         function updateFromPosition(mx, my) {
-            var dx = mx - root.center.x;
-            var dy = my - root.center.y;
-            var dist = Math.sqrt(dx * dx + dy * dy);
-            var sat = Math.min(1.0, dist / root.radius);
+            const dx = mx - root.center.x;
+            const dy = my - root.center.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const sat = Math.min(1.0, dist / root.radius);
 
-            var ang = Math.atan2(dy, dx);
+            let ang = Math.atan2(dy, dx);
             if (ang < 0)
                 ang += 2 * Math.PI;
-            var h = ang / (2 * Math.PI);
+            const h = ang / (2 * Math.PI);
 
             root.colorPicked(h, sat);
         }

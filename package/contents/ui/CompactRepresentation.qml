@@ -25,8 +25,8 @@ MouseArea {
     onWheel: wheel => {
         if (!mainItem.configured)
             return;
-        var delta = wheel.angleDelta.y > 0 ? 13 : -13; // ~5 % Schritte
-        var next = Math.max(0, Math.min(255, mainItem.brightness + delta));
+        const delta = wheel.angleDelta.y > 0 ? 13 : -13; // ~5 % Schritte
+        const next = Math.max(0, Math.min(255, mainItem.brightness + delta));
         if (next <= 0) {
             mainItem.brightness = 0;
             mainItem.setBrightness(0);

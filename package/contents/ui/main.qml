@@ -20,10 +20,25 @@ PlasmoidItem {
     property string statusText: ""
     property bool connected: false
 
+    // --- Status polling ---
+    // One request at a time; extra triggers coalesce into a single follow-up.
+    property int stateRequestId: 0
+    property bool stateRequestInFlight: false
+    property bool stateRefreshPending: false
+
+    readonly property int pollIntervalSeconds: Math.max(3, Plasmoid.configuration.pollInterval)
+    // Keep the timeout below the poll interval.
+    readonly property int requestTimeout: Math.max(2000, Math.min(pollIntervalSeconds * 1000 - 500, 15000))
+
+    // Request namespace per widget instance.
+    readonly property string requestScope: HA.createScope()
+
     readonly property var cfg: ({
         url: Plasmoid.configuration.haUrl,
         token: Plasmoid.configuration.haToken,
-        entityId: Plasmoid.configuration.entityId
+        entityId: Plasmoid.configuration.entityId,
+        timeout: requestTimeout,
+        scope: requestScope
     })
 
     readonly property bool configured: cfg.url && cfg.token && cfg.entityId
@@ -43,30 +58,63 @@ PlasmoidItem {
     // --- Statusabfrage ---
     function refresh() {
         if (!configured) {
+            stateRequestInFlight = false;
+            stateRefreshPending = false;
             connected = false;
             statusText = i18n("Nicht konfiguriert");
             return;
         }
+
+        if (stateRequestInFlight) {
+            stateRefreshPending = true;
+            return;
+        }
+
+        const requestId = ++stateRequestId;
+        stateRequestInFlight = true;
+
         HA.fetchState(cfg, function (state) {
+            if (requestId !== stateRequestId)
+                return;
+            finishStateRequest();
             connected = true;
             statusText = "";
             applyState(state);
         }, function (err) {
+            if (requestId !== stateRequestId)
+                return;
+            finishStateRequest();
             connected = false;
             statusText = err;
         });
+    }
+
+    function finishStateRequest() {
+        stateRequestInFlight = false;
+        if (stateRefreshPending) {
+            stateRefreshPending = false;
+            Qt.callLater(mainItem.refresh);
+        }
+    }
+
+    // Drop in-flight requests after a config change.
+    function cancelPendingRequests() {
+        HA.cancelRequests(cfg.scope, "GET");
+        ++stateRequestId;
+        stateRequestInFlight = false;
+        stateRefreshPending = false;
     }
 
     function applyState(state) {
         if (!state || !state.state)
             return;
         lightOn = (state.state === "on");
-        var a = state.attributes || {};
+        const a = state.attributes || {};
 
         if (a.brightness !== undefined && a.brightness !== null)
             brightness = a.brightness;
 
-        var modes = a.supported_color_modes || [];
+        const modes = a.supported_color_modes || [];
         supportsColor = modes.indexOf("hs") >= 0 || modes.indexOf("rgb") >= 0
             || modes.indexOf("rgbw") >= 0 || modes.indexOf("rgbww") >= 0 || modes.indexOf("xy") >= 0;
         supportsColorTemp = modes.indexOf("color_temp") >= 0;
@@ -82,7 +130,7 @@ PlasmoidItem {
             hue = a.hs_color[0] / 360;
             saturation = a.hs_color[1] / 100;
         } else if (a.rgb_color && a.rgb_color.length === 3) {
-            var c = Qt.rgba(a.rgb_color[0] / 255, a.rgb_color[1] / 255, a.rgb_color[2] / 255, 1);
+            const c = Qt.rgba(a.rgb_color[0] / 255, a.rgb_color[1] / 255, a.rgb_color[2] / 255, 1);
             hue = c.hsvHue >= 0 ? c.hsvHue : 0;
             saturation = c.hsvSaturation;
         }
@@ -132,7 +180,7 @@ PlasmoidItem {
     // --- Timer ---
     Timer {
         id: pollTimer
-        interval: Math.max(3, Plasmoid.configuration.pollInterval) * 1000
+        interval: mainItem.pollIntervalSeconds * 1000
         running: mainItem.configured
         repeat: true
         triggeredOnStart: true
@@ -146,7 +194,10 @@ PlasmoidItem {
         onTriggered: mainItem.refresh()
     }
 
-    onCfgChanged: refresh()
+    onCfgChanged: {
+        mainItem.cancelPendingRequests();
+        mainItem.refresh();
+    }
 
     // --- Repräsentationen ---
     preferredRepresentation: null // Plasma entscheidet je nach Panel
