@@ -3,6 +3,7 @@ import QtQuick.Controls as QQC2
 import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 import "HomeAssistant.js" as HA
+import "FavoritesShared.js" as FavoritesShared
 
 Kirigami.FormLayout {
     id: page
@@ -18,8 +19,64 @@ Kirigami.FormLayout {
     property var cfg_savedColors
     property var cfg_savedColorsDefault: []
 
+    property bool cfg_syncFavorites
+    property bool cfg_syncFavoritesDefault: false
+    property string cfg_colorPresets
+    property string cfg_colorPresetsDefault: ""
+    property string cfg_colorPresetsMeta
+    property string cfg_colorPresetsMetaDefault: ""
+
     property bool loadingLamps: false
+    property bool webSocketsAvailable: true
     readonly property string requestScope: "config"
+    readonly property string cacheStatusText: buildCacheStatus()
+
+    function detectWebSockets() {
+        try {
+            const probe = Qt.createQmlObject("import QtQml; import QtWebSockets; QtObject {}",
+                page, "webSocketsProbe");
+            if (probe) {
+                probe.destroy();
+                return true;
+            }
+        } catch (error) {
+            console.warn("Qt WebSockets is not available: " + error);
+        }
+        return false;
+    }
+
+    function currentSource() {
+        return FavoritesShared.sourceKey(urlField.text, entityField.text);
+    }
+
+    // Clicking the CheckBox assigns `checked` internally and thereby removes
+    // the initial binding. Restore it after the confirmation dialog closes so
+    // a later configuration reset (Defaults) is reflected again.
+    function restoreSyncCheckBinding() {
+        syncCheck.checked = Qt.binding(function () {
+            return page.cfg_syncFavorites;
+        });
+    }
+
+    function buildCacheStatus() {
+        try {
+            const meta = JSON.parse(cfg_colorPresetsMeta || "{}");
+            if (!meta || meta.v !== 1 || meta.source !== currentSource())
+                return i18n("No cached favorite colors for this entity yet.");
+
+            const presets = JSON.parse(cfg_colorPresets || "[]");
+            const count = Array.isArray(presets) ? presets.length : 0;
+            const dateText = meta.syncedAt > 0
+                ? Qt.formatDateTime(new Date(meta.syncedAt * 1000))
+                : i18n("never");
+            return i18np("Cached: %1 color, synced at %2",
+                "Cached: %1 colors, synced at %2", count, dateText);
+        } catch (error) {
+            return i18n("No cached favorite colors for this entity yet.");
+        }
+    }
+
+    Component.onCompleted: webSocketsAvailable = detectWebSockets()
 
     function requestCfg() {
         return {
@@ -136,6 +193,68 @@ Kirigami.FormLayout {
         from: 3
         to: 300
         value: 15
+    }
+
+    Item { Kirigami.FormData.isSection: true }
+
+    QQC2.CheckBox {
+        id: syncCheck
+        Layout.fillWidth: true
+        text: i18n("Sync favorite colors with Home Assistant")
+        checked: page.cfg_syncFavorites
+        enabled: page.webSocketsAvailable || page.cfg_syncFavorites
+        onClicked: {
+            if (checked) {
+                confirmDialog.open();
+            } else {
+                page.cfg_syncFavorites = false;
+                page.restoreSyncCheckBinding();
+            }
+        }
+    }
+
+    QQC2.Label {
+        Layout.fillWidth: true
+        Layout.maximumWidth: Kirigami.Units.gridUnit * 22
+        wrapMode: Text.WordWrap
+        font: Kirigami.Theme.smallFont
+        opacity: 0.7
+        text: page.webSocketsAvailable
+            ? i18n("Favorite colors are read from and written to the lamp's Home Assistant entity registry entry. Without an administrator token, synchronization is read-only.")
+            : i18n("The Qt WebSockets module is required for synchronization and could not be loaded.")
+    }
+
+    QQC2.Label {
+        visible: page.cfg_syncFavorites
+        Layout.fillWidth: true
+        Layout.maximumWidth: Kirigami.Units.gridUnit * 22
+        wrapMode: Text.WordWrap
+        font: Kirigami.Theme.smallFont
+        opacity: 0.7
+        text: page.webSocketsAvailable
+            ? page.cacheStatusText
+            : i18n("Synchronization is unavailable.")
+    }
+
+    Kirigami.PromptDialog {
+        id: confirmDialog
+        title: i18n("Enable Home Assistant color presets?")
+        subtitle: i18n("Local saved colors (%1) will be replaced by favorite colors from Home Assistant. If no favorite colors are configured there, the default colors will be used. Changes made in the widget are written to Home Assistant and become visible to all clients. Writing requires an administrator token; otherwise synchronization is read-only.",
+            page.cfg_savedColors ? page.cfg_savedColors.length : 0)
+        standardButtons: Kirigami.Dialog.Ok | Kirigami.Dialog.Cancel
+
+        onAccepted: {
+            page.cfg_syncFavorites = true;
+            page.restoreSyncCheckBinding();
+        }
+        onRejected: {
+            page.cfg_syncFavorites = false;
+            page.restoreSyncCheckBinding();
+        }
+        onVisibleChanged: {
+            if (!visible)
+                page.restoreSyncCheckBinding();
+        }
     }
 
     Item { Kirigami.FormData.isSection: true }

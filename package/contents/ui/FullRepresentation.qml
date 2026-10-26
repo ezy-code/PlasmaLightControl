@@ -182,24 +182,55 @@ PlasmaExtras.Representation {
             }
         }
 
-        // --- Gespeicherte Farben ---
+        // --- Gespeicherte Farben / Home-Assistant-Favoriten ---
         ColumnLayout {
             Layout.fillWidth: true
             spacing: Kirigami.Units.smallSpacing
             visible: mainItem.supportsColor
+                || (mainItem.syncEnabled && mainItem.supportsColorTemp)
 
             RowLayout {
                 Layout.fillWidth: true
                 PlasmaComponents3.Label {
                     Layout.fillWidth: true
-                    text: i18n("Saved colors")
+                    text: mainItem.syncEnabled
+                        ? i18n("Home Assistant favorites")
+                        : i18n("Saved colors")
                 }
                 PlasmaComponents3.ToolButton {
                     icon.name: "list-add"
                     display: QQC2.AbstractButton.IconOnly
-                    text: i18n("Save current color")
+                    text: mainItem.syncEnabled
+                        ? (mainItem.syncWritable
+                            ? i18n("Add the current color to Home Assistant favorites")
+                            : i18n("Favorite colors are read-only or not synced yet"))
+                        : i18n("Save current color")
                     enabled: mainItem.lightOn
-                    onClicked: savedColorsModel.addCurrent()
+                        && (!mainItem.syncEnabled || mainItem.syncWritable)
+                    onClicked: mainItem.addCurrentPreset()
+                }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                visible: mainItem.syncEnabled
+                spacing: Kirigami.Units.smallSpacing
+
+                PlasmaComponents3.Label {
+                    Layout.fillWidth: true
+                    text: mainItem.syncStatusText
+                    opacity: 0.7
+                    wrapMode: Text.WordWrap
+                    font: Kirigami.Theme.smallFont
+                }
+
+                PlasmaComponents3.ToolButton {
+                    visible: mainItem.syncState === "cached"
+                        || (mainItem.syncState === "error" && mainItem.syncRetryable)
+                    icon.name: "view-refresh"
+                    display: QQC2.AbstractButton.IconOnly
+                    text: i18n("Retry synchronization")
+                    onClicked: mainItem.retrySync()
                 }
             }
 
@@ -208,17 +239,18 @@ PlasmaExtras.Representation {
                 spacing: Kirigami.Units.smallSpacing
 
                 Repeater {
-                    model: Plasmoid.configuration.savedColors
+                    model: mainItem.presetItems
 
                     delegate: Rectangle {
                         id: swatch
                         required property int index
-                        required property string modelData
+                        required property var modelData
+                        readonly property bool writable: !mainItem.syncEnabled || mainItem.syncWritable
 
                         width: Kirigami.Units.gridUnit * 2
                         height: Kirigami.Units.gridUnit * 2
                         radius: Kirigami.Units.smallSpacing
-                        color: modelData
+                        color: modelData.hex
                         border.width: 1
                         border.color: Qt.rgba(0, 0, 0, 0.3)
 
@@ -229,23 +261,35 @@ PlasmaExtras.Representation {
                             acceptedButtons: Qt.LeftButton | Qt.RightButton
                             onClicked: mouse => {
                                 if (mouse.button === Qt.RightButton) {
-                                    savedColorsModel.removeAt(swatch.index);
+                                    if (swatch.writable)
+                                        mainItem.removePreset(swatch.index);
                                 } else {
-                                    const c = Qt.color(swatch.modelData);
-                                    mainItem.setColor(c.hsvHue >= 0 ? c.hsvHue : 0, c.hsvSaturation);
+                                    mainItem.applyPreset(swatch.modelData.spec);
                                 }
                             }
                         }
 
-                        QQC2.ToolTip.text: i18n("Click: apply · Right-click: delete")
+                        QQC2.ToolTip.text: swatch.writable
+                            ? i18n("Click: apply · Right-click: delete")
+                            : i18n("Click: apply")
                         QQC2.ToolTip.visible: swatchMouse.containsMouse
                         QQC2.ToolTip.delay: Kirigami.Units.toolTipDelay
                     }
                 }
 
                 PlasmaComponents3.Label {
-                    visible: Plasmoid.configuration.savedColors.length === 0
-                    text: i18n("No colors saved yet.")
+                    visible: mainItem.presetItems.length === 0
+                    text: {
+                        if (mainItem.syncEnabled
+                                && (mainItem.syncState === "connecting"
+                                    || mainItem.syncState === "auth"
+                                    || mainItem.syncState === "syncing"
+                                    || mainItem.syncState === "cached"))
+                            return i18n("Waiting for favorite colors from Home Assistant…");
+                        return mainItem.syncEnabled
+                            ? i18n("No favorite colors in Home Assistant.")
+                            : i18n("No colors saved yet.");
+                    }
                     opacity: 0.6
                     font: Kirigami.Theme.smallFont
                 }
@@ -344,34 +388,4 @@ PlasmaExtras.Representation {
         when: mainItem.effectList.length > 0
     }
 
-    // Verwaltung der gespeicherten Farben (Persistenz in der Plasmoid-Konfiguration).
-    QtObject {
-        id: savedColorsModel
-
-        function addCurrent() {
-            const c = Qt.hsva(mainItem.hue, mainItem.saturation, 1.0, 1.0);
-            const hex = colorToHex(c);
-            const list = Plasmoid.configuration.savedColors.slice();
-            if (list.indexOf(hex) === -1) {
-                list.push(hex);
-                Plasmoid.configuration.savedColors = list;
-            }
-        }
-
-        function removeAt(index) {
-            const list = Plasmoid.configuration.savedColors.slice();
-            if (index >= 0 && index < list.length) {
-                list.splice(index, 1);
-                Plasmoid.configuration.savedColors = list;
-            }
-        }
-
-        function colorToHex(c) {
-            function toHex(v) {
-                const s = Math.round(v * 255).toString(16);
-                return s.length === 1 ? "0" + s : s;
-            }
-            return "#" + toHex(c.r) + toHex(c.g) + toHex(c.b);
-        }
-    }
 }

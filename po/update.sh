@@ -10,6 +10,7 @@ xgettext --from-code=UTF-8 --language=C++ \
     --package-version="1.0" \
     --msgid-bugs-address="https://github.com/danzicchi/PlasmaLightControl/issues" \
     -ki18n:1 -ki18nc:1c,2 -ki18nd:2 -ki18ndc:2c,3 \
+    -ki18np:1,2 -ki18ncp:1c,2,3 \
     -o "$DOMAIN.pot" \
     ../package/contents/ui/*.qml ../package/contents/config/config.qml
 

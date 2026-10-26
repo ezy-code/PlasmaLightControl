@@ -24,6 +24,16 @@ QtObject {
             return err.detail
                 ? i18n("HTTP %1: %2", err.status, err.detail)
                 : i18n("HTTP error %1", err.status);
+        case "syncNoWebSockets":
+            return i18n("The Qt WebSockets module is required for synchronization and could not be loaded.");
+        case "syncLoadError":
+            return err.detail
+                ? i18n("Could not load the synchronization component: %1", err.detail)
+                : i18n("Could not load the synchronization component.");
+        case "syncConnectionLost":
+            return i18n("Connection to Home Assistant lost.");
+        case "syncInvalidResponse":
+            return i18n("Invalid response from Home Assistant.");
         default:
             return i18n("Unknown error.");
         }

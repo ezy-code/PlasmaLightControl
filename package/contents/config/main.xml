@@ -27,5 +27,17 @@
             <label>Saved colors as hex values</label>
             <default></default>
         </entry>
+        <entry name="syncFavorites" type="Bool">
+            <label>Sync favorite colors with Home Assistant</label>
+            <default>false</default>
+        </entry>
+        <entry name="colorPresets" type="String">
+            <label>Cached Home Assistant favorite colors as JSON</label>
+            <default></default>
+        </entry>
+        <entry name="colorPresetsMeta" type="String">
+            <label>Metadata for the cached favorite colors</label>
+            <default></default>
+        </entry>
     </group>
 </kcfg>
