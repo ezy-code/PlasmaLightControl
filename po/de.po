@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Plasma Light Control 1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/danzicchi/PlasmaLightControl/"
 "issues\n"
-"POT-Creation-Date: 2026-10-23 16:07+0300\n"
+"POT-Creation-Date: 2026-10-27 05:20+0300\n"
 "PO-Revision-Date: 2026-10-22 00:00+0000\n"
 "Last-Translator: danzicchi\n"
 "Language-Team: German\n"
@@ -17,38 +17,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../package/contents/ui/ConfigGeneral.qml:55
-#: ../package/contents/ui/ConfigGeneral.qml:65
-msgid "No cached favorite colors for this entity yet."
-msgstr "Für diese Entität sind noch keine Favoritenfarben zwischengespeichert."
-
-#: ../package/contents/ui/ConfigGeneral.qml:61
-msgid "never"
-msgstr "nie"
-
-#: ../package/contents/ui/ConfigGeneral.qml:62
-msgid "Cached: %1 color, synced at %2"
-msgid_plural "Cached: %1 colors, synced at %2"
-msgstr[0] "Zwischengespeichert: %1 Farbe, synchronisiert am %2"
-msgstr[1] "Zwischengespeichert: %1 Farben, synchronisiert am %2"
-
-#: ../package/contents/ui/ConfigGeneral.qml:84
+#: ../package/contents/ui/ConfigConnection.qml:132
 msgid "Home Assistant URL:"
 msgstr "Home-Assistant-URL:"
 
-#: ../package/contents/ui/ConfigGeneral.qml:91
+#: ../package/contents/ui/ConfigConnection.qml:139
 msgid "Access token:"
 msgstr "Access Token:"
 
-#: ../package/contents/ui/ConfigGeneral.qml:92
+#: ../package/contents/ui/ConfigConnection.qml:140
 msgid "Long-Lived Access Token"
 msgstr "Long-Lived Access Token"
 
-#: ../package/contents/ui/ConfigGeneral.qml:99
+#: ../package/contents/ui/ConfigConnection.qml:147
 msgid "Show token"
 msgstr "Token anzeigen"
 
-#: ../package/contents/ui/ConfigGeneral.qml:108
+#: ../package/contents/ui/ConfigConnection.qml:151
 msgid ""
 "You can create a token in Home Assistant under “Profile → Security → Long-"
 "Lived Access Tokens”."
@@ -56,55 +41,37 @@ msgstr ""
 "Den Token erzeugst du in Home Assistant unter „Profil → Sicherheit → Long-"
 "Lived Access Tokens“."
 
-#: ../package/contents/ui/ConfigGeneral.qml:115
+#: ../package/contents/ui/ConfigConnection.qml:158
 msgid "Lamp entity ID:"
 msgstr "Entity-ID der Lampe:"
 
-#: ../package/contents/ui/ConfigGeneral.qml:123
+#: ../package/contents/ui/ConfigConnection.qml:166
 msgid "Load lamps"
 msgstr "Lampen laden"
 
-#: ../package/contents/ui/ConfigGeneral.qml:128
-msgid "Loading lamps …"
-msgstr "Lampen werden geladen …"
-
-#: ../package/contents/ui/ConfigGeneral.qml:136
-msgid "No lamps found."
-msgstr "Keine Lampen gefunden."
-
-#: ../package/contents/ui/ConfigGeneral.qml:140
-msgid "Found %1 lamps."
-msgstr "%1 Lampen gefunden."
-
-#: ../package/contents/ui/ConfigGeneral.qml:150
-#: ../package/contents/ui/ConfigGeneral.qml:270
-msgid "Error: %1"
-msgstr "Fehler: %1"
-
-#: ../package/contents/ui/ConfigGeneral.qml:166
+#: ../package/contents/ui/ConfigConnection.qml:182
 msgid "Available lamps:"
 msgstr "Verfügbare Lampen:"
 
-#: ../package/contents/ui/ConfigGeneral.qml:182
+#: ../package/contents/ui/ConfigConnection.qml:198
 msgid "Status polling interval (s):"
 msgstr "Statusabfrage-Intervall (s):"
 
-#: ../package/contents/ui/ConfigGeneral.qml:193
-msgid "Sync favorite colors with Home Assistant"
-msgstr "Favoritenfarben mit Home Assistant synchronisieren"
+#: ../package/contents/ui/ConfigConnection.qml:209
+msgid "Sync color presets with Home Assistant"
+msgstr "Farb-Presets mit Home Assistant synchronisieren"
 
-#: ../package/contents/ui/ConfigGeneral.qml:212
+#: ../package/contents/ui/ConfigConnection.qml:224
 msgid ""
-"Favorite colors are read from and written to the lamp's Home Assistant "
-"entity registry entry. Without an administrator token, synchronization is "
-"read-only."
+"Color presets are read from and written to the lamp's Home Assistant entity "
+"registry entry. Without an administrator token, synchronization is read-only."
 msgstr ""
-"Favoritenfarben werden aus dem Entity-Registry-Eintrag der Lampe in Home "
+"Farb-Presets werden aus dem Entity-Registry-Eintrag der Lampe in Home "
 "Assistant gelesen und dorthin geschrieben. Ohne Administrator-Token ist die "
 "Synchronisierung schreibgeschützt."
 
-#: ../package/contents/ui/ConfigGeneral.qml:213
-#: ../package/contents/ui/ErrorMessages.qml:30
+#: ../package/contents/ui/ConfigConnection.qml:225
+#: ../package/contents/ui/ErrorMessages.qml:28
 msgid ""
 "The Qt WebSockets module is required for synchronization and could not be "
 "loaded."
@@ -112,54 +79,32 @@ msgstr ""
 "Für die Synchronisierung wird das Qt-WebSockets-Modul benötigt, das nicht "
 "geladen werden konnte."
 
-#: ../package/contents/ui/ConfigGeneral.qml:225
+#: ../package/contents/ui/ConfigConnection.qml:232
 msgid "Synchronization is unavailable."
 msgstr "Synchronisierung ist nicht verfügbar."
 
-#: ../package/contents/ui/ConfigGeneral.qml:230
+#: ../package/contents/ui/ConfigConnection.qml:237
 msgid "Enable Home Assistant color presets?"
 msgstr "Home-Assistant-Farbvorgaben aktivieren?"
 
-#: ../package/contents/ui/ConfigGeneral.qml:231
+#: ../package/contents/ui/ConfigConnection.qml:238
 msgid ""
-"Local saved colors (%1) will be replaced by favorite colors from Home "
-"Assistant. If no favorite colors are configured there, the default colors "
-"will be used. Changes made in the widget are written to Home Assistant and "
-"become visible to all clients. Writing requires an administrator token; "
-"otherwise synchronization is read-only."
+"Local saved colors (%1) will be replaced by color presets from Home "
+"Assistant. If no color presets are configured there, the default colors will "
+"be used. Changes made in the widget are written to Home Assistant and become "
+"visible to all clients. Writing requires an administrator token; otherwise "
+"synchronization is read-only."
 msgstr ""
-"Lokale gespeicherte Farben (%1) werden durch Favoritenfarben aus Home "
-"Assistant ersetzt. Sind dort keine Favoritenfarben eingerichtet, werden die "
+"Lokale gespeicherte Farben (%1) werden durch Farb-Presets aus Home "
+"Assistant ersetzt. Sind dort keine Farb-Presets eingerichtet, werden die "
 "Standardfarben verwendet. Änderungen im Widget werden in Home Assistant "
 "geschrieben und sind für alle Clients sichtbar. Zum Schreiben ist ein "
 "Administrator-Token erforderlich; andernfalls ist die Synchronisierung "
 "schreibgeschützt."
 
-#: ../package/contents/ui/ConfigGeneral.qml:253
+#: ../package/contents/ui/ConfigConnection.qml:260
 msgid "Test connection"
 msgstr "Verbindung testen"
-
-#: ../package/contents/ui/ConfigGeneral.qml:256
-msgid "Testing …"
-msgstr "Teste …"
-
-#: ../package/contents/ui/ConfigGeneral.qml:262
-msgctxt "@state"
-msgid "on"
-msgstr "eingeschaltet"
-
-#: ../package/contents/ui/ConfigGeneral.qml:262
-msgctxt "@state"
-msgid "off"
-msgstr "ausgeschaltet"
-
-#: ../package/contents/ui/ConfigGeneral.qml:261
-msgid "Connected – lamp is %1."
-msgstr "Verbunden – Lampe ist %1."
-
-#: ../package/contents/ui/ConfigGeneral.qml:265
-msgid "Response without a valid state."
-msgstr "Antwort ohne gültigen Zustand."
 
 #: ../package/contents/ui/ErrorMessages.qml:12
 msgid "No URL or token configured."
@@ -170,7 +115,7 @@ msgid "No lamp entity ID configured."
 msgstr "Keine Entity-ID der Lampe konfiguriert."
 
 #: ../package/contents/ui/ErrorMessages.qml:16
-#: ../package/contents/ui/FavoritesSync.qml:319
+#: ../package/contents/ui/PanelTexts.qml:55
 msgid "Cannot reach Home Assistant."
 msgstr "Keine Verbindung zu Home Assistant."
 
@@ -183,7 +128,7 @@ msgid "Connection timed out."
 msgstr "Zeitüberschreitung bei der Verbindung."
 
 #: ../package/contents/ui/ErrorMessages.qml:22
-#: ../package/contents/ui/FavoritesSync.qml:528
+#: ../package/contents/ui/PanelTexts.qml:69
 msgid "Request cancelled."
 msgstr "Anfrage abgebrochen."
 
@@ -195,283 +140,307 @@ msgstr "HTTP %1: %2"
 msgid "HTTP error %1"
 msgstr "HTTP-Fehler %1"
 
-#: ../package/contents/ui/ErrorMessages.qml:28
-#: ../package/contents/ui/FavoritesSync.qml:188
-#: ../package/contents/ui/FavoritesSync.qml:239
-msgid "Home Assistant connection is not configured."
-msgstr "Die Home-Assistant-Verbindung ist nicht konfiguriert."
+#: ../package/contents/ui/ErrorMessages.qml:31
+msgid "Could not load the synchronization component: %1"
+msgstr ""
 
 #: ../package/contents/ui/ErrorMessages.qml:32
-#: ../package/contents/ui/FavoritesSync.qml:408
-msgid "Home Assistant rejected the access token."
-msgstr "Home Assistant hat den Access Token abgelehnt."
+msgid "Could not load the synchronization component."
+msgstr "Die Synchronisierungskomponente konnte nicht geladen werden."
 
 #: ../package/contents/ui/ErrorMessages.qml:34
-#: ../package/contents/ui/FavoritesSync.qml:631
-#: ../package/contents/ui/FavoritesSync.qml:815
-msgid "This entity is not in the Home Assistant entity registry."
-msgstr ""
-"Diese Entität ist nicht im Entity-Registry von Home Assistant vorhanden."
-
-#: ../package/contents/ui/ErrorMessages.qml:36
-#: ../package/contents/ui/FavoritesSync.qml:97
-#: ../package/contents/ui/FavoritesSync.qml:114
-#: ../package/contents/ui/FavoritesSync.qml:807
-#: ../package/contents/ui/FavoritesSync.qml:808
-msgid "Writing favorite colors requires an administrator token."
-msgstr ""
-"Zum Schreiben von Favoritenfarben ist ein Administrator-Token erforderlich."
-
-#: ../package/contents/ui/ErrorMessages.qml:38
-#: ../package/contents/ui/FavoritesSync.qml:509
-#: ../package/contents/ui/FavoritesSync.qml:637
-msgid "Request to Home Assistant timed out."
-msgstr "Zeitüberschreitung bei der Anfrage an Home Assistant."
-
-#: ../package/contents/ui/ErrorMessages.qml:40
-#: ../package/contents/ui/FavoritesSync.qml:318
-#: ../package/contents/ui/FavoritesSync.qml:455
-#: ../package/contents/ui/FavoritesSync.qml:527
-#: ../package/contents/ui/FavoritesSync.qml:641
+#: ../package/contents/ui/PanelTexts.qml:53
+#: ../package/contents/ui/PanelTexts.qml:82
 msgid "Connection to Home Assistant lost."
 msgstr "Verbindung zu Home Assistant verloren."
 
-#: ../package/contents/ui/ErrorMessages.qml:42
-#: ../package/contents/ui/FavoritesSync.qml:350
-#: ../package/contents/ui/FavoritesSync.qml:556
-#: ../package/contents/ui/FavoritesSync.qml:716
-#: ../package/contents/ui/FavoritesSync.qml:753
+#: ../package/contents/ui/ErrorMessages.qml:36
+#: ../package/contents/ui/PanelTexts.qml:63
+#: ../package/contents/ui/PanelTexts.qml:86
 msgid "Invalid response from Home Assistant."
 msgstr "Ungültige Antwort von Home Assistant."
 
-#: ../package/contents/ui/ErrorMessages.qml:44
-#: ../package/contents/ui/main.qml:586
-msgid "Favorite colors are not supported for this entity."
-msgstr "Diese Entität unterstützt keine Favoritenfarben."
-
-#: ../package/contents/ui/ErrorMessages.qml:46
-#: ../package/contents/ui/FavoritesSync.qml:834
-msgid "Home Assistant rejected the favorite colors."
-msgstr "Home Assistant hat die Favoritenfarben abgelehnt."
-
-#: ../package/contents/ui/ErrorMessages.qml:48
+#: ../package/contents/ui/ErrorMessages.qml:38
 msgid "Unknown error."
 msgstr "Unbekannter Fehler."
 
-#: ../package/contents/ui/FavoritesSync.qml:74
-#: ../package/contents/ui/main.qml:451 ../package/contents/ui/main.qml:565
-#: ../package/contents/ui/main.qml:570 ../package/contents/ui/main.qml:583
-msgid "Waiting for Home Assistant…"
-msgstr "Warte auf Home Assistant…"
-
-#: ../package/contents/ui/FavoritesSync.qml:87
-msgid "Loading favorite colors…"
-msgstr "Favoritenfarben werden geladen …"
-
-#: ../package/contents/ui/FavoritesSync.qml:103
-#: ../package/contents/ui/main.qml:317
-msgid "The current color cannot be saved in Home Assistant."
-msgstr "Die aktuelle Farbe kann nicht in Home Assistant gespeichert werden."
-
-#: ../package/contents/ui/FavoritesSync.qml:120
-msgid "This favorite color cannot be removed."
-msgstr "Diese Favoritenfarbe kann nicht entfernt werden."
-
-#: ../package/contents/ui/FavoritesSync.qml:157
-#: ../package/contents/ui/FavoritesSync.qml:192
-#: ../package/contents/ui/FavoritesSync.qml:246
-#: ../package/contents/ui/FavoritesSync.qml:289
-#: ../package/contents/ui/main.qml:549 ../package/contents/ui/main.qml:552
-#: ../package/contents/ui/main.qml:566 ../package/contents/ui/main.qml:692
-#: ../package/contents/ui/main.qml:703
-msgid "Connecting to Home Assistant…"
-msgstr "Verbindung zu Home Assistant wird hergestellt…"
-
-#: ../package/contents/ui/FavoritesSync.qml:282
-#: ../package/contents/ui/FavoritesSync.qml:341
-#: ../package/contents/ui/FavoritesSync.qml:387
-#: ../package/contents/ui/main.qml:571
-msgid "Authenticating with Home Assistant…"
-msgstr "Authentifizierung bei Home Assistant…"
-
-#: ../package/contents/ui/FavoritesSync.qml:429
-msgid "Not connected to Home Assistant."
-msgstr "Nicht mit Home Assistant verbunden."
-
-#: ../package/contents/ui/FavoritesSync.qml:570
-msgid "Waiting for the lamp state…"
-msgstr "Warten auf den Lampenstatus …"
-
-#: ../package/contents/ui/FavoritesSync.qml:588
-msgid "Invalid favorite colors in Home Assistant."
-msgstr "Ungültige Favoritenfarben in Home Assistant."
-
-#: ../package/contents/ui/FavoritesSync.qml:612
-#: ../package/contents/ui/FavoritesSync.qml:784
-#: ../package/contents/ui/main.qml:580
-msgid "Read-only: administrator token required"
-msgstr "Schreibgeschützt: Administrator-Token erforderlich"
-
-#: ../package/contents/ui/FavoritesSync.qml:616
-#: ../package/contents/ui/FavoritesSync.qml:786
-#: ../package/contents/ui/main.qml:577
-msgid "Synced with Home Assistant"
-msgstr "Mit Home Assistant synchronisiert"
-
-#: ../package/contents/ui/FavoritesSync.qml:634
-msgid "Home Assistant denied access to the entity registry."
-msgstr "Home Assistant hat den Zugriff auf das Entity-Registry verweigert."
-
-#: ../package/contents/ui/FavoritesSync.qml:644
-msgid "Could not load favorite colors from Home Assistant."
-msgstr "Favoritenfarben konnten nicht aus Home Assistant geladen werden."
-
-#: ../package/contents/ui/FavoritesSync.qml:707
-#: ../package/contents/ui/FavoritesSync.qml:782
-#: ../package/contents/ui/main.qml:325 ../package/contents/ui/main.qml:353
-msgid "Saving favorite colors to Home Assistant…"
-msgstr "Favoritenfarben werden in Home Assistant gespeichert …"
-
-#: ../package/contents/ui/FavoritesSync.qml:838
-msgid "Could not save favorite colors in Home Assistant."
-msgstr "Favoritenfarben konnten nicht in Home Assistant gespeichert werden."
-
-#: ../package/contents/ui/FavoritesSync.qml:963
-#: ../package/contents/ui/FavoritesSync.qml:965
-msgid "Authentication with Home Assistant timed out."
-msgstr "Zeitüberschreitung bei der Authentifizierung mit Home Assistant."
-
-#: ../package/contents/ui/FavoritesSync.qml:1006
-msgid ""
-"The lamp state is unavailable; default favorite colors cannot be determined."
-msgstr ""
-"Der Lampenstatus ist nicht verfügbar; die Standard-Favoritenfarben können "
-"nicht ermittelt werden."
-
-#: ../package/contents/ui/FullRepresentation.qml:37
-#: ../package/contents/ui/main.qml:102
+#: ../package/contents/ui/FullRepresentation.qml:38
+#: ../package/contents/ui/PanelTexts.qml:12
 msgid "Not configured"
 msgstr "Nicht konfiguriert"
 
-#: ../package/contents/ui/FullRepresentation.qml:38
+#: ../package/contents/ui/FullRepresentation.qml:39
 msgid "Please enter the lamp's URL, token, and entity ID in the settings."
 msgstr ""
 "Bitte in den Einstellungen URL, Token und Entity-ID der Lampe eintragen."
 
-#: ../package/contents/ui/FullRepresentation.qml:42
+#: ../package/contents/ui/FullRepresentation.qml:43
 msgid "Open settings"
 msgstr "Einstellungen öffnen"
 
-#: ../package/contents/ui/FullRepresentation.qml:92
+#: ../package/contents/ui/FullRepresentation.qml:93
 msgctxt "@action:button"
 msgid "Retry"
 msgstr "Wiederholen"
 
-#: ../package/contents/ui/FullRepresentation.qml:108
+#: ../package/contents/ui/FullRepresentation.qml:109
 msgid "Brightness"
 msgstr "Helligkeit"
 
-#: ../package/contents/ui/FullRepresentation.qml:152
+#: ../package/contents/ui/FullRepresentation.qml:153
 msgid "Color"
 msgstr "Farbe"
 
-#: ../package/contents/ui/FullRepresentation.qml:197
-msgid "Home Assistant favorites"
-msgstr "Home-Assistant-Favoriten"
+#: ../package/contents/ui/FullRepresentation.qml:186
+msgid "Home Assistant presets"
+msgstr "Home-Assistant-Presets"
 
-#: ../package/contents/ui/FullRepresentation.qml:198
+#: ../package/contents/ui/FullRepresentation.qml:187
 msgid "Saved colors"
 msgstr "Gespeicherte Farben"
 
-#: ../package/contents/ui/FullRepresentation.qml:205
-msgid "Add the current color to Home Assistant favorites"
-msgstr "Aktuelle Farbe zu den Home-Assistant-Favoriten hinzufügen"
+#: ../package/contents/ui/FullRepresentation.qml:194
+msgid "Add the current color to Home Assistant presets"
+msgstr "Aktuelle Farbe zu den Home-Assistant-Presets hinzufügen"
 
-#: ../package/contents/ui/FullRepresentation.qml:206
-msgid "Favorite colors are read-only or not synced yet"
-msgstr "Favoritenfarben sind schreibgeschützt oder noch nicht synchronisiert"
+#: ../package/contents/ui/FullRepresentation.qml:195
+msgid "Color presets are read-only or not synced yet"
+msgstr "Farb-Presets sind schreibgeschützt oder noch nicht synchronisiert"
 
-#: ../package/contents/ui/FullRepresentation.qml:207
+#: ../package/contents/ui/FullRepresentation.qml:196
 msgid "Save current color"
 msgstr "Aktuelle Farbe speichern"
 
-#: ../package/contents/ui/FullRepresentation.qml:232
+#: ../package/contents/ui/FullRepresentation.qml:221
 msgid "Retry synchronization"
 msgstr "Synchronisierung wiederholen"
 
-#: ../package/contents/ui/FullRepresentation.qml:273
+#: ../package/contents/ui/FullRepresentation.qml:262
 msgid "Click: apply · Right-click: delete"
 msgstr "Klick: anwenden · Rechtsklick: löschen"
 
-#: ../package/contents/ui/FullRepresentation.qml:274
+#: ../package/contents/ui/FullRepresentation.qml:263
 msgid "Click: apply"
 msgstr "Klicken: anwenden"
 
-#: ../package/contents/ui/FullRepresentation.qml:288
-msgid "Waiting for favorite colors from Home Assistant…"
-msgstr "Warten auf Favoritenfarben von Home Assistant …"
+#: ../package/contents/ui/FullRepresentation.qml:277
+msgid "Waiting for color presets from Home Assistant…"
+msgstr "Warten auf Farb-Presets von Home Assistant …"
 
-#: ../package/contents/ui/FullRepresentation.qml:290
-msgid "No favorite colors in Home Assistant."
-msgstr "Keine Favoritenfarben in Home Assistant."
+#: ../package/contents/ui/FullRepresentation.qml:279
+msgid "No color presets in Home Assistant."
+msgstr "Keine Farb-Presets in Home Assistant."
 
-#: ../package/contents/ui/FullRepresentation.qml:291
+#: ../package/contents/ui/FullRepresentation.qml:280
 msgid "No colors saved yet."
 msgstr "Noch keine Farben gespeichert."
 
-#: ../package/contents/ui/FullRepresentation.qml:310
+#: ../package/contents/ui/FullRepresentation.qml:299
 msgid "Effect"
 msgstr "Effekt"
 
-#: ../package/contents/ui/FullRepresentation.qml:315
+#: ../package/contents/ui/FullRepresentation.qml:304
 msgid "Flash the light"
 msgstr "Lampe blinken lassen"
 
-#: ../package/contents/ui/FullRepresentation.qml:339
+#: ../package/contents/ui/FullRepresentation.qml:328
 msgid "Color temperature"
 msgstr "Farbtemperatur"
 
-#: ../package/contents/ui/main.qml:83
+#: ../package/contents/ui/PanelTexts.qml:10
 msgid "Plasma Light Control"
 msgstr "Plasma Light Control"
 
-#: ../package/contents/ui/main.qml:85
+#: ../package/contents/ui/PanelTexts.qml:14
+#: ../package/contents/ui/PanelTexts.qml:49
+msgid "Connecting to Home Assistant…"
+msgstr "Verbindung zu Home Assistant wird hergestellt…"
+
+#: ../package/contents/ui/PanelTexts.qml:16
+msgid "Waiting for Home Assistant…"
+msgstr "Warte auf Home Assistant…"
+
+#: ../package/contents/ui/PanelTexts.qml:18
+#: ../package/contents/ui/PanelTexts.qml:51
+msgid "Authenticating with Home Assistant…"
+msgstr "Authentifizierung bei Home Assistant…"
+
+#: ../package/contents/ui/PanelTexts.qml:20
+msgid "Syncing color presets…"
+msgstr "Farb-Presets werden synchronisiert …"
+
+#: ../package/contents/ui/PanelTexts.qml:22
+msgid "Synced with Home Assistant"
+msgstr "Mit Home Assistant synchronisiert"
+
+#: ../package/contents/ui/PanelTexts.qml:24
+msgid "Read-only: administrator token required"
+msgstr "Schreibgeschützt: Administrator-Token erforderlich"
+
+#: ../package/contents/ui/PanelTexts.qml:26
+msgid "Color presets are not supported for this entity."
+msgstr "Diese Entität unterstützt keine Farb-Presets."
+
+#: ../package/contents/ui/PanelTexts.qml:28
+msgid "Could not sync color presets."
+msgstr "Farb-Presets konnten nicht synchronisiert werden."
+
+#: ../package/contents/ui/PanelTexts.qml:30
+#: ../package/contents/ui/PanelTexts.qml:102
+msgid "The current color cannot be saved in Home Assistant."
+msgstr "Die aktuelle Farbe kann nicht in Home Assistant gespeichert werden."
+
+#: ../package/contents/ui/PanelTexts.qml:32
+msgid "This color is already in the presets."
+msgstr ""
+
+#: ../package/contents/ui/PanelTexts.qml:34
+#: ../package/contents/ui/PanelTexts.qml:100
+msgid "Saving color presets to Home Assistant…"
+msgstr "Farb-Presets werden in Home Assistant gespeichert …"
+
+#: ../package/contents/ui/PanelTexts.qml:36
+msgid "Could not restore the color presets; the current list was kept."
+msgstr ""
+
+#: ../package/contents/ui/PanelTexts.qml:38
 msgid "Left-click: popup · Middle-click: toggle · Wheel: brightness"
 msgstr "Linksklick: Fenster · Mittelklick: Ein/Aus · Rad: Helligkeit"
 
-#: ../package/contents/ui/main.qml:87
+#: ../package/contents/ui/PanelTexts.qml:40
 msgid "Not configured – please set up the connection."
 msgstr "Nicht konfiguriert – bitte Verbindung einrichten."
 
-#: ../package/contents/ui/main.qml:89
+#: ../package/contents/ui/PanelTexts.qml:42
 msgid "Connecting …"
 msgstr "Verbinde …"
 
-#: ../package/contents/ui/main.qml:91
+#: ../package/contents/ui/PanelTexts.qml:44
 msgid "On · Brightness %1 %"
 msgstr "Ein · Helligkeit %1 %"
 
-#: ../package/contents/ui/main.qml:92
+#: ../package/contents/ui/PanelTexts.qml:46
 msgctxt "@state"
 msgid "Off"
 msgstr "Aus"
 
-#: ../package/contents/ui/main.qml:574
-msgid "Syncing favorite colors…"
-msgstr "Favoritenfarben werden synchronisiert …"
+#: ../package/contents/ui/PanelTexts.qml:57
+#: ../package/contents/ui/PanelTexts.qml:98
+msgid "Home Assistant connection is not configured."
+msgstr "Die Home-Assistant-Verbindung ist nicht konfiguriert."
 
-#: ../package/contents/ui/main.qml:589
-msgid "Could not sync favorite colors."
-msgstr "Favoritenfarben konnten nicht synchronisiert werden."
+#: ../package/contents/ui/PanelTexts.qml:59
+msgid "Authentication with Home Assistant timed out."
+msgstr "Zeitüberschreitung bei der Authentifizierung mit Home Assistant."
+
+#: ../package/contents/ui/PanelTexts.qml:61
+msgid "Home Assistant rejected the access token."
+msgstr "Home Assistant hat den Access Token abgelehnt."
+
+#: ../package/contents/ui/PanelTexts.qml:65
+msgid "Not connected to Home Assistant."
+msgstr "Nicht mit Home Assistant verbunden."
+
+#: ../package/contents/ui/PanelTexts.qml:67
+#: ../package/contents/ui/PanelTexts.qml:80
+msgid "Request to Home Assistant timed out."
+msgstr "Zeitüberschreitung bei der Anfrage an Home Assistant."
+
+#: ../package/contents/ui/PanelTexts.qml:72
+msgid "Loading color presets…"
+msgstr "Farb-Presets werden geladen …"
+
+#: ../package/contents/ui/PanelTexts.qml:74
+msgid "Waiting for the lamp state…"
+msgstr "Warten auf den Lampenstatus …"
+
+#: ../package/contents/ui/PanelTexts.qml:76
+msgid "This entity is not in the Home Assistant entity registry."
+msgstr ""
+"Diese Entität ist nicht im Entity-Registry von Home Assistant vorhanden."
+
+#: ../package/contents/ui/PanelTexts.qml:78
+msgid "Home Assistant denied access to the entity registry."
+msgstr "Home Assistant hat den Zugriff auf das Entity-Registry verweigert."
+
+#: ../package/contents/ui/PanelTexts.qml:84
+msgid "Could not load color presets from Home Assistant."
+msgstr "Farb-Presets konnten nicht aus Home Assistant geladen werden."
+
+#: ../package/contents/ui/PanelTexts.qml:88
+msgid "Invalid color presets in Home Assistant."
+msgstr "Ungültige Farb-Presets in Home Assistant."
+
+#: ../package/contents/ui/PanelTexts.qml:90
+msgid "Writing color presets requires an administrator token."
+msgstr ""
+"Zum Schreiben von Farb-Presets ist ein Administrator-Token erforderlich."
+
+#: ../package/contents/ui/PanelTexts.qml:92
+msgid "Home Assistant rejected the color presets."
+msgstr "Home Assistant hat die Farb-Presets abgelehnt."
+
+#: ../package/contents/ui/PanelTexts.qml:94
+msgid "Could not save color presets in Home Assistant."
+msgstr "Farb-Presets konnten nicht in Home Assistant gespeichert werden."
+
+#: ../package/contents/ui/PanelTexts.qml:96
+msgid ""
+"The lamp state is unavailable; default color presets cannot be determined."
+msgstr ""
+"Der Lampenstatus ist nicht verfügbar; die Standard-Farb-Presets können "
+"nicht ermittelt werden."
+
+#: ../package/contents/ui/PanelTexts.qml:104
+msgid "This preset cannot be removed."
+msgstr "Dieses Preset kann nicht entfernt werden."
+
+#: ../package/contents/ui/PanelTexts.qml:107
+msgid "Loading lamps …"
+msgstr "Lampen werden geladen …"
+
+#: ../package/contents/ui/PanelTexts.qml:109
+msgid "No lamps found."
+msgstr "Keine Lampen gefunden."
+
+#: ../package/contents/ui/PanelTexts.qml:111
+msgid "Found %1 lamps."
+msgstr "%1 Lampen gefunden."
+
+#: ../package/contents/ui/PanelTexts.qml:113
+msgid "Error: %1"
+msgstr "Fehler: %1"
+
+#: ../package/contents/ui/PanelTexts.qml:115
+msgid "Testing …"
+msgstr "Teste …"
+
+#: ../package/contents/ui/PanelTexts.qml:117
+msgid "Connected – lamp is on."
+msgstr "Verbunden – Lampe ist an."
+
+#: ../package/contents/ui/PanelTexts.qml:119
+msgid "Connected – lamp is off."
+msgstr "Verbunden – Lampe ist aus."
+
+#: ../package/contents/ui/PanelTexts.qml:121
+msgid "Response without a valid state."
+msgstr "Antwort ohne gültigen Zustand."
+
+#: ../package/contents/ui/PanelTexts.qml:123
+msgid "No cached color presets for this entity yet."
+msgstr "Für diese Entität sind noch keine Farb-Presets zwischengespeichert."
+
+#: ../package/contents/ui/PanelTexts.qml:125
+msgid "Cached: %1 color, synced at %2"
+msgid_plural "Cached: %1 colors, synced at %2"
+msgstr[0] "Zwischengespeichert: %1 Farbe, synchronisiert am %2"
+msgstr[1] "Zwischengespeichert: %1 Farben, synchronisiert am %2"
+
+#: ../package/contents/ui/PanelTexts.qml:128
+msgid "never"
+msgstr "nie"
 
 #: ../package/contents/config/config.qml:6
 msgid "Connection"
 msgstr "Verbindung"
-
-#~ msgctxt "@action:button"
-#~ msgid "Turn off"
-#~ msgstr "Aus"
-
-#~ msgctxt "@action:button"
-#~ msgid "Turn on"
-#~ msgstr "Ein"

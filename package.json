@@ -1,0 +1,24 @@
+{
+  "name": "plasmalightcontrol",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.14.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "check": "tsc -p tsconfig.json && tsc -p tsconfig.test.json",
+    "build": "node build.mjs",
+    "build:check": "node build.mjs --check",
+    "test": "node --test \"src/**/*.test.ts\"",
+    "lint": "biome lint src",
+    "install:widget": "./install.sh",
+    "verify": "pnpm run check && pnpm test && pnpm run build:check"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.6.3",
+    "@types/node": "^24.19.2",
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2"
+  }
+}

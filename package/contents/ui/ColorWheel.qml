@@ -1,7 +1,7 @@
 import QtQuick
+import "generated/ControlMath.mjs" as ControlMath
 
-// HSV-Farbkreis: Winkel = Farbton (Hue), Radius = Sättigung (Saturation).
-// Der Value/Brightness-Anteil wird separat über den Helligkeitsslider gesteuert.
+// HSV wheel: angle = hue, radius = saturation; brightness comes from the slider.
 Item {
     id: root
 
@@ -9,7 +9,6 @@ Item {
     property real saturation: 0.0   // 0..1
     property color selectedColor: Qt.hsva(hue, saturation, 1.0, 1.0)
 
-    // Wird ausgelöst, wenn der Nutzer aktiv eine Farbe wählt.
     signal colorPicked(real hue, real saturation)
 
     implicitWidth: 200
@@ -31,8 +30,7 @@ Item {
 
             ctx.clearRect(0, 0, width, height);
 
-            // Farbton als Kranz aus feinen Segmenten zeichnen.
-            const step = 1; // Grad
+            const step = 1; // degrees
             for (let a = 0; a < 360; a += step) {
                 const start = (a - 0.5) * Math.PI / 180;
                 const end = (a + step + 0.5) * Math.PI / 180;
@@ -44,7 +42,7 @@ Item {
                 ctx.fill();
             }
 
-            // Radialer Weiß-Verlauf für die Sättigung (Mitte weiß -> Rand transparent).
+            // Saturation: white in the center, transparent at the rim.
             const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
             grad.addColorStop(0, "rgba(255,255,255,1)");
             grad.addColorStop(1, "rgba(255,255,255,0)");
@@ -55,7 +53,6 @@ Item {
         }
     }
 
-    // Auswahlmarkierung
     Rectangle {
         id: selector
         width: 16
@@ -66,8 +63,10 @@ Item {
         color: root.selectedColor
         antialiasing: true
 
-        x: root.center.x + Math.cos(root.hue * 2 * Math.PI) * root.saturation * root.radius - width / 2
-        y: root.center.y + Math.sin(root.hue * 2 * Math.PI) * root.saturation * root.radius - height / 2
+        readonly property var offset: ControlMath.wheelSelector(root.hue, root.saturation, root.radius)
+
+        x: root.center.x + offset.x - width / 2
+        y: root.center.y + offset.y - height / 2
 
         Rectangle {
             anchors.fill: parent
@@ -84,20 +83,10 @@ Item {
         onPressed: mouse => updateFromPosition(mouse.x, mouse.y)
         onPositionChanged: mouse => updateFromPosition(mouse.x, mouse.y)
 
-        // Nur das Signal auslösen; hue/saturation werden von außen (mainItem)
-        // gesetzt, damit die Komponente eine kontrollierte Ansicht bleibt.
+        // Only emits the signal; hue/saturation are set from outside (mainItem).
         function updateFromPosition(mx, my) {
-            const dx = mx - root.center.x;
-            const dy = my - root.center.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            const sat = Math.min(1.0, dist / root.radius);
-
-            let ang = Math.atan2(dy, dx);
-            if (ang < 0)
-                ang += 2 * Math.PI;
-            const h = ang / (2 * Math.PI);
-
-            root.colorPicked(h, sat);
+            const pick = ControlMath.wheelPick(mx - root.center.x, my - root.center.y, root.radius);
+            root.colorPicked(pick.hue01, pick.saturation01);
         }
     }
 

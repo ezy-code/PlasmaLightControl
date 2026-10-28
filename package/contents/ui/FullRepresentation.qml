@@ -1,4 +1,5 @@
 import QtQuick
+import "generated/ControlMath.mjs" as ControlMath
 import QtQuick.Layouts
 import QtQuick.Controls as QQC2
 import org.kde.plasma.plasmoid
@@ -11,11 +12,9 @@ PlasmaExtras.Representation {
 
     readonly property int margin: Kirigami.Units.smallSpacing
 
-    // Feste Breite. Die Höhe richtet sich nach dem tatsächlichen Inhalt
-    // ("nur so groß wie nötig"). minimum == maximum == preferred verhindert,
-    // dass der Nutzer das Popup vergrößern kann.
+    // Fixed width; minimum == maximum == preferred, so the popup cannot be resized.
     readonly property int fixedWidth: Kirigami.Units.gridUnit * 17
-    readonly property int desiredHeight: mainItem.configured
+    readonly property int desiredHeight: mainItem.snapshot.configured
         ? Math.round(contentColumn.implicitHeight) + 2 * margin
         : Kirigami.Units.gridUnit * 18
 
@@ -28,11 +27,10 @@ PlasmaExtras.Representation {
 
     collapseMarginsHint: true
 
-    // Hinweis, wenn keine Konfiguration vorhanden ist.
     PlasmaExtras.PlaceholderMessage {
         anchors.centerIn: parent
         width: parent.width - Kirigami.Units.gridUnit * 4
-        visible: !mainItem.configured
+        visible: !mainItem.snapshot.configured
         iconName: "network-disconnect"
         text: i18n("Not configured")
         explanation: i18n("Please enter the lamp's URL, token, and entity ID in the settings.")
@@ -44,8 +42,7 @@ PlasmaExtras.Representation {
         }
     }
 
-    // Inhalt: nur top/left/right verankert, damit die Höhe frei aus dem
-    // Inhalt (implicitHeight) folgt.
+    // Anchored top/left/right only, so the height follows implicitHeight.
     ColumnLayout {
         id: contentColumn
         anchors.top: parent.top
@@ -53,9 +50,8 @@ PlasmaExtras.Representation {
         anchors.right: parent.right
         anchors.margins: fullRoot.margin
         spacing: Kirigami.Units.largeSpacing
-        visible: mainItem.configured
+        visible: mainItem.snapshot.configured
 
-        // --- Kopfzeile mit Titel und An/Aus-Schalter ---
         RowLayout {
             Layout.fillWidth: true
             spacing: Kirigami.Units.smallSpacing
@@ -64,24 +60,23 @@ PlasmaExtras.Representation {
                 Layout.fillWidth: true
                 level: 3
                 elide: Text.ElideRight
-                text: mainItem.displayName || Plasmoid.configuration.entityId
+                text: mainItem.snapshot.displayName || Plasmoid.configuration.entityId
             }
 
             QQC2.Switch {
                 id: toggleSwitch
-                onClicked: mainItem.toggleLight()
+                onClicked: mainItem.session.toggleLight()
             }
         }
 
-        // Verbindungsfehler-Hinweis
         RowLayout {
             Layout.fillWidth: true
-            visible: !mainItem.connected && mainItem.statusText.length > 0
+            visible: !mainItem.snapshot.connected && mainItem.snapshot.statusText.length > 0
             spacing: Kirigami.Units.smallSpacing
 
             PlasmaComponents3.Label {
                 Layout.fillWidth: true
-                text: mainItem.statusText
+                text: mainItem.snapshot.statusText
                 color: Kirigami.Theme.negativeTextColor
                 wrapMode: Text.WordWrap
                 font: Kirigami.Theme.smallFont
@@ -91,15 +86,14 @@ PlasmaExtras.Representation {
                 icon.name: "view-refresh"
                 text: i18nc("@action:button", "Retry")
                 display: QQC2.AbstractButton.IconOnly
-                onClicked: mainItem.refresh()
+                onClicked: mainItem.session.refresh()
             }
         }
 
-        // --- Helligkeit ---
         ColumnLayout {
             Layout.fillWidth: true
             spacing: Kirigami.Units.smallSpacing
-            enabled: mainItem.lightOn
+            enabled: mainItem.snapshot.lightOn
 
             RowLayout {
                 Layout.fillWidth: true
@@ -126,13 +120,13 @@ PlasmaExtras.Representation {
                     Layout.fillWidth: true
                     from: 0
                     to: 255
-                    value: mainItem.brightness
-                    // Nur bei Nutzerinteraktion senden, nicht bei Statusupdates.
+                    value: mainItem.snapshot.brightness
+                    // Send only on user interaction, not on status updates.
                     onPressedChanged: {
                         if (!pressed)
-                            mainItem.setBrightness(value);
+                            mainItem.session.setBrightness(value);
                     }
-                    onMoved: mainItem.brightness = value
+                    onMoved: mainItem.session.previewBrightness(value)
                 }
                 Kirigami.Icon {
                     source: "brightness-high"
@@ -142,16 +136,14 @@ PlasmaExtras.Representation {
             }
         }
 
-        // --- Farbkreis ---
         ColumnLayout {
             Layout.fillWidth: true
             spacing: Kirigami.Units.smallSpacing
-            visible: mainItem.supportsColor
-            enabled: mainItem.lightOn
+            visible: mainItem.snapshot.supportsColor
+            enabled: mainItem.snapshot.lightOn
 
             PlasmaComponents3.Label { text: i18n("Color") }
 
-            // Wrapper füllt die Breite; der Farbkreis wird darin exakt zentriert.
             Item {
                 Layout.fillWidth: true
                 Layout.preferredHeight: colorWheel.height
@@ -162,75 +154,62 @@ PlasmaExtras.Representation {
                     width: Math.min(parent.width, Kirigami.Units.gridUnit * 13)
                     height: width
 
-                    hue: mainItem.hue
-                    saturation: mainItem.saturation
+                    hue: mainItem.snapshot.hue01
+                    saturation: mainItem.snapshot.saturation01
 
-                    onColorPicked: (h, s) => {
-                        // Sofort optimistisch anzeigen, damit der Selektor folgt.
-                        mainItem.hue = h;
-                        mainItem.saturation = s;
-                        colorApplyTimer.restart();
-                    }
-
-                    // Sendet die Farbe leicht gedrosselt, um HA nicht zu überfluten.
-                    Timer {
-                        id: colorApplyTimer
-                        interval: 200
-                        onTriggered: mainItem.setColor(colorWheel.hue, colorWheel.saturation)
-                    }
+                    onColorPicked: (h, s) => mainItem.session.scheduleColor(h, s)
                 }
             }
         }
 
-        // --- Gespeicherte Farben / Home-Assistant-Favoriten ---
         ColumnLayout {
             Layout.fillWidth: true
             spacing: Kirigami.Units.smallSpacing
-            visible: mainItem.supportsColor
-                || (mainItem.syncEnabled && mainItem.supportsColorTemp)
+            visible: mainItem.snapshot.supportsColor
+                || (mainItem.snapshot.syncEnabled && mainItem.snapshot.supportsColorTemp)
 
             RowLayout {
                 Layout.fillWidth: true
                 PlasmaComponents3.Label {
                     Layout.fillWidth: true
-                    text: mainItem.syncEnabled
-                        ? i18n("Home Assistant favorites")
+                    text: mainItem.snapshot.syncEnabled
+                        ? i18n("Home Assistant presets")
                         : i18n("Saved colors")
                 }
                 PlasmaComponents3.ToolButton {
                     icon.name: "list-add"
                     display: QQC2.AbstractButton.IconOnly
-                    text: mainItem.syncEnabled
-                        ? (mainItem.syncWritable
-                            ? i18n("Add the current color to Home Assistant favorites")
-                            : i18n("Favorite colors are read-only or not synced yet"))
+                    text: mainItem.snapshot.syncEnabled
+                        ? (mainItem.snapshot.syncWritable
+                            ? i18n("Add the current color to Home Assistant presets")
+                            : i18n("Color presets are read-only or not synced yet"))
                         : i18n("Save current color")
-                    enabled: mainItem.lightOn
-                        && (!mainItem.syncEnabled || mainItem.syncWritable)
-                    onClicked: mainItem.addCurrentPreset()
+                    enabled: mainItem.snapshot.lightOn
+                        && (!mainItem.snapshot.syncEnabled || mainItem.snapshot.syncWritable)
+                    onClicked: mainItem.session.addCurrentPreset()
                 }
             }
 
             RowLayout {
                 Layout.fillWidth: true
-                visible: mainItem.syncEnabled
+                visible: mainItem.snapshot.syncEnabled
                 spacing: Kirigami.Units.smallSpacing
 
                 PlasmaComponents3.Label {
                     Layout.fillWidth: true
-                    text: mainItem.syncStatusText
+                    text: mainItem.snapshot.syncStatusText
                     opacity: 0.7
                     wrapMode: Text.WordWrap
                     font: Kirigami.Theme.smallFont
                 }
 
                 PlasmaComponents3.ToolButton {
-                    visible: mainItem.syncState === "cached"
-                        || (mainItem.syncState === "error" && mainItem.syncRetryable)
+                    visible: mainItem.snapshot.syncState === "cached"
+                        || (mainItem.snapshot.syncState === "error" && mainItem.snapshot.syncRetryable)
                     icon.name: "view-refresh"
                     display: QQC2.AbstractButton.IconOnly
                     text: i18n("Retry synchronization")
-                    onClicked: mainItem.retrySync()
+                    onClicked: mainItem.session.retrySync()
                 }
             }
 
@@ -239,13 +218,13 @@ PlasmaExtras.Representation {
                 spacing: Kirigami.Units.smallSpacing
 
                 Repeater {
-                    model: mainItem.presetItems
+                    model: mainItem.snapshot.presetItems
 
                     delegate: Rectangle {
                         id: swatch
                         required property int index
                         required property var modelData
-                        readonly property bool writable: !mainItem.syncEnabled || mainItem.syncWritable
+                        readonly property bool writable: !mainItem.snapshot.syncEnabled || mainItem.snapshot.syncWritable
 
                         width: Kirigami.Units.gridUnit * 2
                         height: Kirigami.Units.gridUnit * 2
@@ -262,9 +241,9 @@ PlasmaExtras.Representation {
                             onClicked: mouse => {
                                 if (mouse.button === Qt.RightButton) {
                                     if (swatch.writable)
-                                        mainItem.removePreset(swatch.index);
+                                        mainItem.session.removePreset(swatch.index);
                                 } else {
-                                    mainItem.applyPreset(swatch.modelData.spec);
+                                    mainItem.session.applyPreset(swatch.modelData.spec);
                                 }
                             }
                         }
@@ -278,16 +257,16 @@ PlasmaExtras.Representation {
                 }
 
                 PlasmaComponents3.Label {
-                    visible: mainItem.presetItems.length === 0
+                    visible: mainItem.snapshot.presetItems.length === 0
                     text: {
-                        if (mainItem.syncEnabled
-                                && (mainItem.syncState === "connecting"
-                                    || mainItem.syncState === "auth"
-                                    || mainItem.syncState === "syncing"
-                                    || mainItem.syncState === "cached"))
-                            return i18n("Waiting for favorite colors from Home Assistant…");
-                        return mainItem.syncEnabled
-                            ? i18n("No favorite colors in Home Assistant.")
+                        if (mainItem.snapshot.syncEnabled
+                                && (mainItem.snapshot.syncState === "connecting"
+                                    || mainItem.snapshot.syncState === "auth"
+                                    || mainItem.snapshot.syncState === "syncing"
+                                    || mainItem.snapshot.syncState === "cached"))
+                            return i18n("Waiting for color presets from Home Assistant…");
+                        return mainItem.snapshot.syncEnabled
+                            ? i18n("No color presets in Home Assistant.")
                             : i18n("No colors saved yet.");
                     }
                     opacity: 0.6
@@ -296,12 +275,11 @@ PlasmaExtras.Representation {
             }
         }
 
-        // --- Effekte ---
         ColumnLayout {
             Layout.fillWidth: true
             spacing: Kirigami.Units.smallSpacing
-            visible: mainItem.supportsEffect
-            enabled: mainItem.lightOn
+            visible: mainItem.snapshot.supportsEffect
+            enabled: mainItem.snapshot.lightOn
 
             RowLayout {
                 Layout.fillWidth: true
@@ -313,24 +291,23 @@ PlasmaExtras.Representation {
                     icon.name: "media-record"
                     display: QQC2.AbstractButton.IconOnly
                     text: i18n("Flash the light")
-                    onClicked: mainItem.flashLight()
+                    onClicked: mainItem.session.flashLight()
                 }
             }
 
             QQC2.ComboBox {
                 id: effectCombo
                 Layout.fillWidth: true
-                model: mainItem.effectList
-                onActivated: index => mainItem.setEffect(mainItem.effectList[index])
+                model: mainItem.snapshot.effectList
+                onActivated: index => mainItem.session.setEffect(mainItem.snapshot.effectList[index])
             }
         }
 
-        // --- Farbtemperatur ---
         ColumnLayout {
             Layout.fillWidth: true
             spacing: Kirigami.Units.smallSpacing
-            visible: mainItem.supportsColorTemp
-            enabled: mainItem.lightOn
+            visible: mainItem.snapshot.supportsColorTemp
+            enabled: mainItem.snapshot.lightOn
 
             RowLayout {
                 Layout.fillWidth: true
@@ -344,7 +321,7 @@ PlasmaExtras.Representation {
                 }
             }
 
-            // Verlaufsbalken warm -> kalt als visuelle Hilfe.
+            // Warm -> cool gradient bar as a visual cue.
             Rectangle {
                 Layout.fillWidth: true
                 height: Kirigami.Units.smallSpacing
@@ -360,32 +337,32 @@ PlasmaExtras.Representation {
             PlasmaComponents3.Slider {
                 id: tempSlider
                 Layout.fillWidth: true
-                from: mainItem.minKelvin
-                to: mainItem.maxKelvin
+                from: mainItem.snapshot.minKelvin
+                to: mainItem.snapshot.maxKelvin
                 stepSize: 50
-                value: mainItem.colorTempKelvin
+                value: mainItem.snapshot.colorTempKelvin
                 onPressedChanged: {
                     if (!pressed)
-                        mainItem.setColorTemp(value);
+                        mainItem.session.setColorTemp(value);
                 }
-                onMoved: mainItem.colorTempKelvin = value
+                onMoved: mainItem.session.previewColorTemp(value)
             }
         }
     }
 
-    // Hält den Switch synchron, auch wenn der Status vom Polling kommt.
+    // Keeps the switch in sync, even when the state comes from polling.
     Binding {
         target: toggleSwitch
         property: "checked"
-        value: mainItem.lightOn
+        value: mainItem.snapshot.lightOn
     }
 
-    // Binding statt direkter Bindung, damit die Auswahl des Nutzers erhalten bleibt.
+    // Binding, not a direct bind, so the user's selection survives.
     Binding {
         target: effectCombo
         property: "currentIndex"
-        value: Math.max(0, mainItem.effectList.indexOf(mainItem.currentEffect))
-        when: mainItem.effectList.length > 0
+        value: ControlMath.effectIndex(mainItem.snapshot.effectList, mainItem.snapshot.currentEffect)
+        when: mainItem.snapshot.effectList.length > 0
     }
 
 }

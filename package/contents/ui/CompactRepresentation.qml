@@ -1,45 +1,41 @@
 import QtQuick
+import "generated/ControlMath.mjs" as ControlMath
 import org.kde.plasma.plasmoid
-import org.kde.plasma.core as PlasmaCore
 import org.kde.kirigami as Kirigami
 
 MouseArea {
     id: compactRoot
 
-    property bool lightOn: mainItem.lightOn
-    property bool connected: mainItem.connected
+    property bool lightOn: mainItem.snapshot.lightOn
+    property bool connected: mainItem.snapshot.connected
 
     acceptedButtons: Qt.LeftButton | Qt.MiddleButton
     hoverEnabled: true
 
-    // Linksklick: Popup ein-/ausblenden. Mittelklick: Lampe direkt toggeln.
     onClicked: mouse => {
         if (mouse.button === Qt.MiddleButton) {
-            mainItem.toggleLight();
+            mainItem.session.toggleLight();
         } else {
             mainItem.expanded = !mainItem.expanded;
         }
     }
 
-    // Mausrad über dem Icon regelt die Helligkeit in 5-%-Schritten.
+    // Wheel over the icon changes brightness in 5 % steps.
     onWheel: wheel => {
-        if (!mainItem.configured || !mainItem.connected || !mainItem.available)
+        if (!mainItem.snapshot.configured || !mainItem.snapshot.connected || !mainItem.snapshot.available)
             return;
-        // Übernehmen, sonst scrollt die Panelleiste mit.
+        // Accepted, otherwise the panel bar scrolls too.
         wheel.accepted = true;
 
-        const step = wheel.angleDelta.y > 0 ? 5 : -5;
-        const percent = Math.max(0, Math.min(100, Math.round(mainItem.brightness / 255 * 100) + step));
-        const next = Math.round(percent * 255 / 100);
-        if (next !== mainItem.brightness)
-            mainItem.setBrightness(next);
+        const next = ControlMath.brightnessStep(mainItem.snapshot.brightness, wheel.angleDelta.y > 0 ? 5 : -5);
+        if (next !== null)
+            mainItem.session.setBrightness(next);
     }
 
     Kirigami.Icon {
         id: icon
         anchors.fill: parent
-        // Eigene, monochrome Glühlampen-Icons aus dem Paket. Beide werden als
-        // Maske in der Theme-Farbe gefärbt (leuchtend = gefüllt, aus = Umriss).
+        // Package icons, both tinted as a mask in the theme color.
         source: compactRoot.lightOn
             ? Qt.resolvedUrl("../icons/light-on.svg")
             : Qt.resolvedUrl("../icons/light-off.svg")
@@ -48,21 +44,19 @@ MouseArea {
         active: compactRoot.containsMouse
         opacity: compactRoot.connected ? 1.0 : 0.5
 
-        // Kleiner Farbindikator, der die aktuelle Lichtfarbe zeigt.
         Rectangle {
-            visible: compactRoot.lightOn && mainItem.supportsColor
+            visible: compactRoot.lightOn && mainItem.snapshot.supportsColor
             width: Math.max(4, parent.width * 0.28)
             height: width
             radius: width / 2
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-            color: Qt.hsva(mainItem.hue, mainItem.saturation, 1.0, 1.0)
+            color: Qt.hsva(mainItem.snapshot.hue01, mainItem.snapshot.saturation01, 1.0, 1.0)
             border.width: 1
             border.color: Qt.rgba(0, 0, 0, 0.4)
         }
     }
 
-    // Nicht verbunden / nicht konfiguriert: Warnmarkierung.
     Rectangle {
         visible: !compactRoot.connected
         width: Math.max(5, parent.width * 0.3)
