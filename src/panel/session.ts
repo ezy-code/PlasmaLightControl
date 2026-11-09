@@ -598,12 +598,17 @@ export function createSession(host: PanelHost): PanelSession {
         });
     }
 
-    // Drop in-flight requests after a config change.
-    function cancelPendingRequests(): void {
+    // A lamp command or a config change supersedes state reads that started before
+    // it, so their stale answer cannot overwrite what the user just set.
+    function supersedeStateRequest(): void {
         host.cancelRequests(scope, "GET");
         ++stateRequestId;
         stateRequestInFlight = false;
         stateRefreshPending = false;
+    }
+
+    function cancelPendingRequests(): void {
+        supersedeStateRequest();
     }
 
     function applyState(state: unknown): void {
@@ -636,6 +641,8 @@ export function createSession(host: PanelHost): PanelSession {
         cancelScheduledColor();
         if (!configured())
             return;
+
+        supersedeStateRequest();
 
         host.toggle(connection(), function (): void {
             // Short delay so Home Assistant has applied the new state.
@@ -688,7 +695,9 @@ export function createSession(host: PanelHost): PanelSession {
         if (!configured())
             return;
 
-        host.turnOn(connection(), { brightness: Math.round(value), transition: 0.4 }, function (): void {
+        supersedeStateRequest();
+
+        host.turnOn(connection(), { brightness: Math.round(value) }, function (): void {
             lamp.lightOn = true;
             render();
         }, reportError);
@@ -704,7 +713,9 @@ export function createSession(host: PanelHost): PanelSession {
         if (!configured())
             return;
 
-        host.turnOn(connection(), { hs_color: spec.hs_color, transition: 0.4 }, function (): void {
+        supersedeStateRequest();
+
+        host.turnOn(connection(), { hs_color: spec.hs_color }, function (): void {
             lamp.lightOn = true;
             render();
         }, reportError);
@@ -718,7 +729,9 @@ export function createSession(host: PanelHost): PanelSession {
         if (!configured())
             return;
 
-        host.turnOn(connection(), { color_temp_kelvin: Math.round(kelvin), transition: 0.4 }, function (): void {
+        supersedeStateRequest();
+
+        host.turnOn(connection(), { color_temp_kelvin: Math.round(kelvin) }, function (): void {
             lamp.lightOn = true;
             render();
         }, reportError);
@@ -730,7 +743,9 @@ export function createSession(host: PanelHost): PanelSession {
         if (!configured())
             return;
 
-        host.turnOn(connection(), { effect: effect, transition: 0.4 }, function (): void {
+        supersedeStateRequest();
+
+        host.turnOn(connection(), { effect: effect }, function (): void {
             lamp.lightOn = true;
             render();
         }, reportError);
@@ -739,6 +754,8 @@ export function createSession(host: PanelHost): PanelSession {
     function flashLight(): void {
         if (!configured())
             return;
+
+        supersedeStateRequest();
 
         host.turnOn(connection(), { flash: "short" }, undefined, reportError);
     }
@@ -749,10 +766,12 @@ export function createSession(host: PanelHost): PanelSession {
             return;
 
         cancelScheduledColor();
-        const attributes: LightServiceAttrs = { transition: 0.4 };
+        const attributes: LightServiceAttrs = {};
         const record = normalized as unknown as Record<string, unknown>;
         for (const key of Object.keys(record))
             attributes[key] = record[key];
+
+        supersedeStateRequest();
 
         host.turnOn(connection(), attributes, function (): void {
             lamp.lightOn = true;

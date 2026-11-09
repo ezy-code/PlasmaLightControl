@@ -308,10 +308,24 @@ test("brightness is previewed immediately and sent rounded", () => {
     session.setBrightness(127.6);
 
     assert.equal(session.snapshot().brightness, 127.6);
-    assert.deepEqual(fake.log.requests[0]?.attributes, { brightness: 128, transition: 0.4 });
+    assert.deepEqual(fake.log.requests[0]?.attributes, { brightness: 128 });
 
     fake.log.requests[0]?.succeed();
     assert.equal(session.snapshot().lightOn, true);
+});
+
+test("a state refresh that started before a brightness change is discarded", () => {
+    const fake = createFakeHost();
+    const session = started(fake);
+
+    session.refresh();
+    const staleState = fake.log.requests[0];
+    assert.equal(staleState?.kind, "fetchState");
+
+    session.setBrightness(128);
+    staleState?.succeed(lampState({}, { brightness: 122 }));
+
+    assert.equal(session.snapshot().brightness, 128);
 });
 
 test("color, temperature and effect updates carry their attributes", () => {
@@ -319,16 +333,16 @@ test("color, temperature and effect updates carry their attributes", () => {
     const session = started(fake);
 
     session.setColor(0.5, 0.5);
-    assert.deepEqual(fake.log.requests[0]?.attributes, { hs_color: [180, 50], transition: 0.4 });
+    assert.deepEqual(fake.log.requests[0]?.attributes, { hs_color: [180, 50] });
     assert.deepEqual(session.snapshot().currentColorSpec, hsColor(180, 50));
 
     session.setColorTemp(2700.4);
-    assert.deepEqual(fake.log.requests[1]?.attributes, { color_temp_kelvin: 2700, transition: 0.4 });
+    assert.deepEqual(fake.log.requests[1]?.attributes, { color_temp_kelvin: 2700 });
     assert.deepEqual(session.snapshot().currentColorSpec, { color_temp_kelvin: 2700 });
     assert.equal(session.snapshot().colorTempKelvin, 2700.4);
 
     session.setEffect("pulse");
-    assert.deepEqual(fake.log.requests[2]?.attributes, { effect: "pulse", transition: 0.4 });
+    assert.deepEqual(fake.log.requests[2]?.attributes, { effect: "pulse" });
     assert.equal(session.snapshot().currentEffect, "pulse");
 });
 
@@ -345,7 +359,7 @@ test("color picks are debounced and only the last one is sent", () => {
     assert.equal(fake.log.requests.length, 0);
 
     session.applyScheduledColor();
-    assert.deepEqual(fake.log.requests[0]?.attributes, { hs_color: [108, 40], transition: 0.4 });
+    assert.deepEqual(fake.log.requests[0]?.attributes, { hs_color: [108, 40] });
     assert.deepEqual(session.snapshot().currentColorSpec, hsColor(108, 40));
 
     session.applyScheduledColor();
@@ -375,7 +389,7 @@ test("an immediate color change cancels a scheduled one", () => {
     assert.equal(fake.log.colorTimerStops, 1);
     session.applyScheduledColor();
     assert.equal(fake.log.requests.length, 1);
-    assert.deepEqual(fake.log.requests[0]?.attributes, { hs_color: [180, 100], transition: 0.4 });
+    assert.deepEqual(fake.log.requests[0]?.attributes, { hs_color: [180, 100] });
 });
 
 test("a connection change drops a scheduled color", () => {
@@ -404,7 +418,7 @@ test("a preset moves the wheel and becomes the current color", () => {
     const session = started(fake);
     session.applyPreset({ rgb_color: [0, 255, 0] });
 
-    assert.deepEqual(fake.log.requests[0]?.attributes, { rgb_color: [0, 255, 0], transition: 0.4 });
+    assert.deepEqual(fake.log.requests[0]?.attributes, { rgb_color: [0, 255, 0] });
     fake.log.requests[0]?.succeed();
 
     assert.equal(session.snapshot().lightOn, true);
