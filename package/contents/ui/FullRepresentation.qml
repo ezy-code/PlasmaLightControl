@@ -127,6 +127,22 @@ PlasmaExtras.Representation {
                             mainItem.session.setBrightness(value);
                     }
                     onMoved: mainItem.session.previewBrightness(value)
+
+                    // The template's own wheel step is 0.1 of 255 brightness units and
+                    // only previews, so the wheel steps and commits to Home Assistant here.
+                    property int wheelPending: 0
+                    MouseArea {
+                        anchors.fill: parent
+                        acceptedButtons: Qt.NoButton
+                        onWheel: wheel => {
+                            wheel.accepted = true;
+                            const step = ControlMath.wheelStep(brightnessSlider.value, brightnessSlider.wheelPending,
+                                wheel.angleDelta.y, 5, 0, 255);
+                            brightnessSlider.wheelPending = step.pending;
+                            if (step.value !== null)
+                                mainItem.session.setBrightness(step.value);
+                        }
+                    }
                 }
                 Kirigami.Icon {
                     source: "brightness-high"
@@ -346,6 +362,22 @@ PlasmaExtras.Representation {
                         mainItem.session.setColorTemp(value);
                 }
                 onMoved: mainItem.session.previewColorTemp(value)
+
+                // Same as the brightness wheel: 5 % of the kelvin range per notch,
+                // committed instead of only previewed.
+                property int wheelPending: 0
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.NoButton
+                    onWheel: wheel => {
+                        wheel.accepted = true;
+                        const step = ControlMath.wheelStep(tempSlider.value, tempSlider.wheelPending,
+                            wheel.angleDelta.y, 5, tempSlider.from, tempSlider.to);
+                        tempSlider.wheelPending = step.pending;
+                        if (step.value !== null)
+                            mainItem.session.setColorTemp(step.value);
+                    }
+                }
             }
         }
     }

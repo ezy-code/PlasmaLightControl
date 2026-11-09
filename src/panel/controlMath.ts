@@ -28,11 +28,46 @@ export function wheelSelector(hue: number, saturation: number, radius: number): 
     };
 }
 
+/** One wheel event: the new value (null when unchanged) plus the sub-notch remainder. */
+export interface WheelStep {
+    value: number | null;
+    pending: number;
+}
+
+const WHEEL_NOTCH = 120;
+
+/** Value moved by `percent` of its `from`..`to` range, or null when it is unchanged. */
+function percentStep(value: number, percent: number, from: number, to: number): number | null {
+    const percentNow = Math.round((value - from) / (to - from) * 100);
+    const nextPercent = Math.max(0, Math.min(100, percentNow + percent));
+    const next = Math.round(from + nextPercent / 100 * (to - from));
+    return next === value ? null : next;
+}
+
 /** Brightness 0..255 + percent step -> new value, or null when it is unchanged. */
 export function brightnessStep(brightness: number, deltaPercent: number): number | null {
-    const percent = Math.max(0, Math.min(100, Math.round(brightness / 255 * 100) + deltaPercent));
-    const next = Math.round(percent * 255 / 100);
-    return next === brightness ? null : next;
+    return percentStep(brightness, deltaPercent, 0, 255);
+}
+
+// Wheel deltas below one notch are kept in `pending` so a high-resolution wheel
+// needs the same total delta as a 120-unit mouse wheel per `percent` step.
+export function wheelStep(
+    value: number,
+    pending: number,
+    delta: number,
+    percent: number,
+    from: number,
+    to: number,
+): WheelStep {
+    if (to <= from)
+        return { value: null, pending: 0 };
+
+    const total = pending + delta;
+    const notches = total < 0 ? Math.ceil(total / WHEEL_NOTCH) : Math.floor(total / WHEEL_NOTCH);
+    if (notches === 0)
+        return { value: null, pending: total };
+
+    return { value: percentStep(value, notches * percent, from, to), pending: total - notches * WHEEL_NOTCH };
 }
 
 /** 0..255 -> percent 0..100, rounded. */
