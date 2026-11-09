@@ -2,3 +2,4 @@
 .directory
 node_modules/
 .build-check/
+package/contents/ui/generated/

@@ -1,0 +1,43 @@
+name: Release
+
+on:
+    push:
+        tags:
+            - "v*"
+    workflow_dispatch:
+
+permissions:
+    contents: write
+
+jobs:
+    release:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: pnpm/action-setup@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Verify sources
+              run: pnpm run verify
+
+            - name: Build bundles
+              run: pnpm run build
+
+            - name: Package widget
+              run: |
+                  cd package
+                  zip -r "$GITHUB_WORKSPACE/plasmalightcontrol-${GITHUB_REF_NAME}.plasmoid" .
+
+            - name: Publish release
+              uses: softprops/action-gh-release@v2
+              with:
+                  files: plasmalightcontrol-*.plasmoid
+                  generate_release_notes: true

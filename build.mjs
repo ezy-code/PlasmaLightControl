@@ -46,30 +46,41 @@ for (const file of files) {
 }
 
 if (checkMode) {
-    const committed = (await readdir(outdir)).sort();
+    // The artifacts are not tracked: on a clean checkout there is nothing to
+    // compare, so a successful self-contained build is enough. A local build
+    // directory is still compared to catch stale files left by an old build.
+    const local = await readdir(outdir).catch(() => null);
     const mismatch = [];
-    for (const file of files) {
-        if (!committed.includes(file)) {
-            mismatch.push(`missing artifact: ${file}`);
-            continue;
+
+    if (local === null) {
+        console.log(`Built ${files.length} self-contained bundles; nothing to compare.`);
+    } else {
+        const localFiles = local.sort();
+        for (const file of files) {
+            if (!localFiles.includes(file)) {
+                mismatch.push(`missing artifact: ${file}`);
+                continue;
+            }
+            const fresh = await readFile(join(target, file), "utf8");
+            const old = await readFile(join(outdir, file), "utf8");
+            if (fresh !== old)
+                mismatch.push(`outdated artifact: ${file}`);
         }
-        const fresh = await readFile(join(target, file), "utf8");
-        const old = await readFile(join(outdir, file), "utf8");
-        if (fresh !== old)
-            mismatch.push(`outdated artifact: ${file}`);
+        for (const file of localFiles) {
+            if (!files.includes(file))
+                mismatch.push(`stale artifact: ${file}`);
+        }
+        if (mismatch.length === 0)
+            console.log("Local build artifacts are up to date.");
     }
-    for (const file of committed) {
-        if (!files.includes(file))
-            mismatch.push(`stale artifact: ${file}`);
-    }
+
     await rm(target, { recursive: true, force: true });
     if (mismatch.length > 0) {
         for (const line of mismatch)
             console.error(line);
-        console.error("Run 'pnpm run build' and commit the regenerated artifacts.");
+        console.error("Run 'pnpm run build' to regenerate the artifacts.");
         process.exit(1);
     }
-    console.log("Generated artifacts are up to date.");
 } else {
     console.log(`Built ${files.length} artifacts in ${outdir}`);
 }
