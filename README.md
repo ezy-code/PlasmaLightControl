@@ -1,95 +1,121 @@
 # Plasma Light Control
 
-Ein KDE-Plasma-6-Panel-Widget (Plasmoid), das eine über
-[Home Assistant](https://www.home-assistant.io/) angebundene Lampe steuert:
-An/Aus, Helligkeit, Farbe (über einen HSV-Farbkreis), Farbtemperatur sowie
-gespeicherte Lieblingsfarben.
+A KDE Plasma 6 panel widget (plasmoid) that controls a lamp exposed through
+[Home Assistant](https://www.home-assistant.io/): on/off, brightness, color
+(with an HSV color wheel), color temperature, and color presets (stored
+locally or synchronized with Home Assistant).
 
-## Vorschau
-
-<p align="center">
-  <img src="screenshots/popup.png" alt="Bedienfenster mit Helligkeit, Farbkreis, gespeicherten Farben und Farbtemperatur" width="360">
-</p>
-
-Eigene, an die Theme-Farbe angepasste Panel-Icons zeigen den Zustand der Lampe
-(eingeschaltet mit Farbpunkt für die aktuelle Lichtfarbe, ausgeschaltet):
+## Preview
 
 <p align="center">
-  <img src="screenshots/panel-icons.png" alt="Panel-Icons: eingeschaltet und ausgeschaltet" width="360">
+  <img src="screenshots/panel-icons.png" alt="Popup with brightness, color wheel, presets and color temperature" width="360">
 </p>
 
-## Funktionen
+Custom panel icons follow the theme color and show the lamp state (on with a
+dot of the current light color, off):
 
-- **Panel-Icon**
-  - *Linksklick* – öffnet/schließt das Bedienfenster
-  - *Mittelklick* – schaltet die Lampe direkt an/aus (Toggle)
-  - *Mausrad* – regelt die Helligkeit
-  - Farbpunkt am Icon zeigt die aktuelle Lichtfarbe, ein rotes Warnzeichen
-    signalisiert eine fehlende Verbindung
-- **Bedienfenster**
-  - Großer An/Aus-Schalter
-  - Helligkeits-Slider
-  - HSV-Farbkreis (Winkel = Farbton, Radius = Sättigung)
-  - Gespeicherte Farben: aktuelle Farbe mit „+" sichern, per Klick anwenden,
-    per Rechtsklick löschen
-  - Farbtemperatur-Slider (warm ↔ kalt), sofern die Lampe das unterstützt
-- **Einstellungen**: URL, Access Token, Entity-ID und Abfrageintervall,
-  inklusive „Verbindung testen"-Knopf
+<p align="center">
+  <img src="screenshots/panel-icons.png" alt="Panel icons: on and off" width="360">
+</p>
 
-Farb- und Temperaturregler werden automatisch nur angezeigt, wenn die Lampe
-die jeweiligen `supported_color_modes` meldet.
+## Features
 
-## Voraussetzungen
+- **Panel icon**
+  - *Left click* – opens/closes the popup
+  - *Middle click* – toggles the lamp directly
+  - *Mouse wheel* – adjusts brightness
+  - The dot on the icon shows the current light color, a red warning sign
+    signals a missing connection
+- **Popup**
+  - Large on/off switch
+  - Brightness slider
+  - HSV color wheel (angle = hue, radius = saturation)
+  - Presets: save the current color with "+", apply with a click, delete
+    with a right click (local or synchronized)
+  - Color temperature slider (warm ↔ cold) when the lamp supports it
+- **Settings**: URL, access token, entity ID and polling interval, including
+  a **Test connection** button
 
-- KDE Plasma 6 (getestet mit 6.7)
-- Eine erreichbare Home-Assistant-Instanz
-- Ein **Long-Lived Access Token** (Home Assistant → *Profil → Sicherheit →
+The color and temperature controls are shown only when the lamp reports the
+corresponding `supported_color_modes`.
+
+## Requirements
+
+- KDE Plasma 6 (tested with 6.7)
+- A reachable Home Assistant instance
+- A **Long-Lived Access Token** (Home Assistant → *Profile → Security →
   Long-Lived Access Tokens*)
 
 ## Installation
+
+Download the `.plasmoid` file from the latest
+[release](https://github.com/danzicchi/PlasmaLightControl/releases) and install
+it with:
+
+```sh
+kpackagetool6 --type Plasma/Applet --install plasmalightcontrol-vX.Y.plasmoid
+```
+
+From a source checkout, `install.sh` builds the modules, then installs or
+updates the package:
 
 ```sh
 ./install.sh
 ```
 
-oder manuell:
+or through pnpm:
 
 ```sh
-kpackagetool6 --type Plasma/Applet --install package    # Erstinstallation
-kpackagetool6 --type Plasma/Applet --upgrade package     # Aktualisierung
+pnpm run install:widget
 ```
 
-Danach das Widget über „Zur Kontrollleiste hinzufügen" bzw. in den
-Miniprogramme-Dialog aus dem Panel-Kontextmenü einfügen.
+Manual install from a checkout needs a build first:
 
-## Konfiguration
+```sh
+pnpm install && pnpm run build
+kpackagetool6 --type Plasma/Applet --install package    # first install
+kpackagetool6 --type Plasma/Applet --upgrade package     # update
+```
 
-1. Rechtsklick auf das Widget → **Plasma Light Control einrichten…**
-2. **Home-Assistant-URL** eintragen, z. B. `http://homeassistant.local:8123`
-3. **Access Token** einfügen
-4. **Entity-ID** der Lampe angeben, z. B. `light.wohnzimmer`
-5. Mit **Verbindung testen** prüfen
+Then add the widget from the panel context menu (*Add Widgets*), or through
+the widget dialog of the panel.
 
-## Deinstallation
+## Configuration
+
+1. Right-click the widget → **Configure Plasma Light Control…**
+2. Enter the **Home Assistant URL**, e.g. `http://homeassistant.local:8123`
+3. Paste the **Access token**
+4. Enter the lamp's **Entity ID**, e.g. `light.living_room`
+5. Check the connection with **Test connection**
+
+## Uninstallation
 
 ```sh
 kpackagetool6 --type Plasma/Applet --remove com.github.danzicchi.plasmalightcontrol
 ```
 
-## Projektstruktur
+## Development
 
+All logic lives in `src/` (TypeScript) and is built into
+`package/contents/ui/generated/`. The QML files are hosts: they declare only
+the objects that exist in QML (WebSocket, Timer, Loader, Canvas, configuration
+aliases) and forward calls to the modules (`panel/session.ts`,
+`presets/sync.ts`, `ha/socket.ts`, `panel/configPage.ts`,
+`panel/controlMath.ts`). Strings stay in `PanelTexts.qml` because xgettext only
+scans `.qml` files. The `.mjs` artifacts are not tracked by git and are rebuilt
+from `src/` before every install and release:
+
+```sh
+pnpm install
+pnpm run build     # regenerates package/contents/ui/generated/*.mjs
+pnpm test          # node --test on src/
+pnpm run check     # tsc (sources and tests)
+pnpm run lint      # biome
+pnpm run verify    # check + test + verifies the bundles build cleanly
 ```
-package/
-├── metadata.json                 Paket-Metadaten
-└── contents/
-    ├── config/
-    │   ├── main.xml              Konfigurationsschlüssel
-    │   └── config.qml           Einstellungskategorien
-    └── ui/
-        ├── main.qml             Zustand, Polling, HA-Aktionen
-        ├── CompactRepresentation.qml   Panel-Icon (Klick/Mittelklick/Rad)
-        ├── FullRepresentation.qml      Bedienfenster
-        ├── ColorWheel.qml       HSV-Farbkreis (Canvas)
-        ├── ConfigGeneral.qml    Einstellungsseite
-        └── HomeAssistant.js     REST-API-Anbindung
-```
+
+Requires Node 24 or newer and pnpm. Releases are built by CI on `v*` tags: the
+workflow runs `verify`, builds the bundles and attaches the packaged
+`.plasmoid` to the GitHub release.
+
+This README was translated from German.
