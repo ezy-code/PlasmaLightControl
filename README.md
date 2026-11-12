@@ -8,14 +8,7 @@ locally or synchronized with Home Assistant).
 ## Preview
 
 <p align="center">
-  <img src="screenshots/panel-icons.png" alt="Popup with brightness, color wheel, presets and color temperature" width="360">
-</p>
-
-Custom panel icons follow the theme color and show the lamp state (on with a
-dot of the current light color, off):
-
-<p align="center">
-  <img src="screenshots/panel-icons.png" alt="Panel icons: on and off" width="360">
+  <img src="screenshots/panel.png" alt="Panel with brightness, color wheel, presets and color temperature" width="352">
 </p>
 
 ## Features
